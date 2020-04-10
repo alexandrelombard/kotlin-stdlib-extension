@@ -85,7 +85,7 @@ class MathContext {
      *
      * @serial
      */
-    val roundingMode: RoundingMode?
+    val roundingMode: RoundingMode
     /* ----- Constructors ----- */
     /**
      * Constructs a new `MathContext` with the specified
@@ -112,10 +112,9 @@ class MathContext {
      */
     constructor(
         setPrecision: Int,
-        setRoundingMode: RoundingMode?
+        setRoundingMode: RoundingMode
     ) {
         if (setPrecision < MIN_DIGITS) throw IllegalArgumentException("Digits < 0")
-        if (setRoundingMode == null) throw NullPointerException("null RoundingMode")
         precision = setPrecision
         roundingMode = setRoundingMode
         return
@@ -181,18 +180,18 @@ class MathContext {
      * Compares this `MathContext` with the specified
      * `Object` for equality.
      *
-     * @param  x `Object` to which this `MathContext` is to
+     * @param  other `Object` to which this `MathContext` is to
      * be compared.
      * @return `true` if and only if the specified `Object` is
      * a `MathContext` object which has exactly the same
      * settings as this object
      */
-    override fun equals(x: Any?): Boolean {
+    override fun equals(other: Any?): Boolean {
         val mc: MathContext?
-        if (x === null) return false
-        if (x !is MathContext) return false
-        return (x.precision == precision
-                && x.roundingMode == roundingMode // no need for .equals()
+        if (other === null) return false
+        if (other !is MathContext) return false
+        return (other.precision == precision
+                && other.roundingMode == roundingMode // no need for .equals()
                 )
     }
 
