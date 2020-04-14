@@ -129,6 +129,7 @@ import org.apache.commonskt.lang.shl
  * @author  Timothy Buktu
  * @since JDK1.1
  */
+@ExperimentalUnsignedTypes
 @PublicApi
 @ExperimentalStdlibApi
 class BigInteger : Number, Comparable<BigInteger> {
@@ -4324,7 +4325,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          * exponent is Double.MAX_EXPONENT, we round up (correctly) to
          * Double.POSITIVE_INFINITY.
          */
-        bits = bits or (signum and DoubleConsts.SIGN_BIT_MASK).toLong()
+        bits = bits or (signum.toULong() and DoubleConsts.SIGN_BIT_MASK).toLong()
         return Double.fromBits(bits)
     }
     /**
