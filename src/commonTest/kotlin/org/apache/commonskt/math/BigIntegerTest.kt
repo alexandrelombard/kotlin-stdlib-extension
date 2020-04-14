@@ -306,7 +306,7 @@ object BigIntegerTest {
             }
             failCount
         }
-        val sb: java.util.stream.Stream.Builder<BigInteger> = Stream.builder()
+        val sb = arrayListOf<BigInteger>()
         val maxExponent: Int = DoubleConsts.MAX_EXPONENT + 1
         for (i in 1..maxExponent) {
             val p2: BigInteger = BigInteger.ONE.shiftLeft(i)
@@ -318,8 +318,9 @@ object BigIntegerTest {
         sb.add(BigDecimal(Double.MAX_VALUE).toBigInteger().add(BigInteger.ONE))
         report(
             "squareRoot for 2^N and 2^N - 1, 1 <= N <= Double.MAX_EXPONENT",
-            sb.build().collect(Collectors.summingInt(f))
+            sb.sumBy(f)
         )
+        random.nextInt()
         val ints: IntStream = random.ints(SIZE.toLong(), 4, Int.MAX_VALUE)
         report(
             "squareRoot for int",
