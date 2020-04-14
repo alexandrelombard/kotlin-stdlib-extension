@@ -4136,7 +4136,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * result with the opposite sign.
      *
      * @return this BigInteger converted to an `int`.
-     * @see .intValueExact
+     * @see .toIntExact
      */
     override fun toInt(): Int {
         var result = 0
@@ -4157,7 +4157,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * result with the opposite sign.
      *
      * @return this BigInteger converted to a `long`.
-     * @see .longValueExact
+     * @see .toLongExact
      */
     override fun toLong(): Long {
         var result: Long = 0
@@ -4425,7 +4425,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @since  1.8
      */
-    fun longValueExact(): Long {
+    fun toLongExact(): Long {
         return if (mag.size <= 2 && bitLength() <= 63) toLong() else throw ArithmeticException("BigInteger out of long range")
     }
 
@@ -4442,7 +4442,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @since  1.8
      */
-    fun intValueExact(): Int {
+    fun toIntExact(): Int {
         return if (mag.size <= 1 && bitLength() <= 31) toInt() else throw ArithmeticException("BigInteger out of int range")
     }
 
@@ -4459,7 +4459,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @since  1.8
      */
-    fun shortValueExact(): Short {
+    fun toShortExact(): Short {
         if (mag.size <= 1 && bitLength() <= 31) {
             val value = toInt()
             if (value >= Short.MIN_VALUE && value <= Short.MAX_VALUE) return toShort()
@@ -4480,7 +4480,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @since  1.8
      */
-    fun byteValueExact(): Byte {
+    fun toByteExact(): Byte {
         if (mag.size <= 1 && bitLength() <= 31) {
             val value = toInt()
             if (value >= Byte.MIN_VALUE && value <= Byte.MAX_VALUE) return toByte()
