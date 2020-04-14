@@ -28,17 +28,12 @@
 package org.apache.commonskt.math
 
 import org.apache.commonskt.PublicApi
+import org.apache.commonskt.assert
+import org.apache.commonskt.collections.copyOf
+import org.apache.commonskt.lang.*
 import kotlin.experimental.and
 import kotlin.math.*
 import kotlin.random.Random
-
-import org.apache.commonskt.assert
-import org.apache.commonskt.collections.copyOf
-import org.apache.commonskt.lang.Character
-import org.apache.commonskt.lang.DoubleConsts
-import org.apache.commonskt.lang.FloatConsts
-import org.apache.commonskt.lang.IntegerConsts
-import org.apache.commonskt.lang.shl
 
 /**
  * Immutable arbitrary-precision integers.  All operations behave as if
@@ -141,7 +136,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @serial
      */
-    val signum: Int
+    var signum: Int
 
     /**
      * The magnitude of this BigInteger, in *big-endian* order: the
@@ -152,7 +147,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * value.  Note that this implies that the BigInteger zero has a
      * zero-length mag array.
      */
-    val mag: IntArray
+    var mag: IntArray
     // These "redundant fields" are initialized with recognizable nonsense
     // values, and cached the first time they are needed (or never, if they
     // aren't needed).
@@ -238,6 +233,31 @@ class BigInteger : Number, Comparable<BigInteger> {
     private var firstNonzeroIntNum = 0
     // Constructors
     /**
+     * Translates a byte sub-array containing the two's-complement binary
+     * representation of a BigInteger into a BigInteger.  The sub-array is
+     * specified via an offset into the array and a length.  The sub-array is
+     * assumed to be in *big-endian* byte-order: the most significant
+     * byte is the element at index `off`.  The `val` array is
+     * assumed to be unchanged for the duration of the constructor call.
+     *
+     * An `IndexOutOfBoundsException` is thrown if the length of the array
+     * `val` is non-zero and either `off` is negative, `len`
+     * is negative, or `off+len` is greater than the length of
+     * `val`.
+     *
+     * @param  val byte array containing a sub-array which is the big-endian
+     * two's-complement binary representation of a BigInteger.
+     * @param  off the start offset of the binary representation.
+     * @param  len the number of bytes to use.
+     * @throws NumberFormatException `val` is zero bytes long.
+     * @throws IndexOutOfBoundsException if the provided array offset and
+     * length would cause an index into the byte array to be
+     * negative or greater than or equal to the array length.
+     * @since 9
+     */
+    constructor(`val`: ByteArray, off: Int, len: Int) : this(`val`.copyOfRange(off, off + len))
+
+    /**
      * Translates a byte array containing the two's-complement binary
      * representation of a BigInteger into a BigInteger.  The input array is
      * assumed to be in *big-endian* byte-order: the most significant
@@ -281,6 +301,37 @@ class BigInteger : Number, Comparable<BigInteger> {
         }
     }
 
+    /**
+     * Translates the sign-magnitude representation of a BigInteger into a
+     * BigInteger.  The sign is represented as an integer signum value: -1 for
+     * negative, 0 for zero, or 1 for positive.  The magnitude is a sub-array of
+     * a byte array in <i>big-endian</i> byte-order: the most significant byte
+     * is the element at index {@code off}.  A zero value of the length
+     * {@code len} is permissible, and will result in a BigInteger value of 0,
+     * whether signum is -1, 0 or 1.  The {@code magnitude} array is assumed to
+     * be unchanged for the duration of the constructor call.
+     *
+     * An {@code IndexOutOfBoundsException} is thrown if the length of the array
+     * {@code magnitude} is non-zero and either {@code off} is negative,
+     * {@code len} is negative, or {@code off+len} is greater than the length of
+     * {@code magnitude}.
+     *
+     * @param  signum signum of the number (-1 for negative, 0 for zero, 1
+     *         for positive).
+     * @param  magnitude big-endian binary representation of the magnitude of
+     *         the number.
+     * @param  off the start offset of the binary representation.
+     * @param  len the number of bytes to use.
+     * @throws NumberFormatException {@code signum} is not one of the three
+     *         legal values (-1, 0, and 1), or {@code signum} is 0 and
+     *         {@code magnitude} contains one or more non-zero bytes.
+     * @throws IndexOutOfBoundsException if the provided array offset and
+     *         length would cause an index into the byte array to be
+     *         negative or greater than or equal to the array length.
+     * @since 9
+     */
+    constructor(signum: Int, magnitude: ByteArray, off: Int, len: Int) :
+            this(signum, magnitude.copyOfRange(off, off + len))
     /**
      * Translates the sign-magnitude representation of a BigInteger into a
      * BigInteger.  The sign is represented as an integer signum value: -1 for
@@ -3074,6 +3125,52 @@ class BigInteger : Number, Comparable<BigInteger> {
                 answer
             }
         }
+    }
+
+    /**
+     * Returns the integer square root of this BigInteger.  The integer square
+     * root of the corresponding mathematical integer `n` is the largest
+     * mathematical integer `s` such that `s*s <= n`.  It is equal
+     * to the value of `floor(sqrt(n))`, where `sqrt(n)` denotes the
+     * real square root of `n` treated as a real.  Note that the integer
+     * square root will be less than the real square root if the latter is not
+     * representable as an integral value.
+     *
+     * @return the integer square root of `this`
+     * @throws ArithmeticException if `this` is negative.  (The square
+     * root of a negative integer `val` is
+     * `(i * sqrt(-val))` where *i* is the
+     * *imaginary unit* and is equal to
+     * `sqrt(-1)`.)
+     * @since  9
+     */
+    fun sqrt(): BigInteger {
+        if (signum < 0) {
+            throw ArithmeticException("Negative BigInteger")
+        }
+        return MutableBigInteger(mag).sqrt().toBigInteger()
+    }
+
+    /**
+     * Returns an array of two BigIntegers containing the integer square root
+     * `s` of `this` and its remainder `this - s*s`,
+     * respectively.
+     *
+     * @return an array of two BigIntegers with the integer square root at
+     * offset 0 and the remainder at offset 1
+     * @throws ArithmeticException if `this` is negative.  (The square
+     * root of a negative integer `val` is
+     * `(i * sqrt(-val))` where *i* is the
+     * *imaginary unit* and is equal to
+     * `sqrt(-1)`.)
+     * @see .sqrt
+     * @since  9
+     */
+    fun sqrtAndRemainder(): Array<BigInteger> {
+        val s = sqrt()
+        val r = this.subtract(s.square())
+        assert(r >= ZERO)
+        return arrayOf(s, r)
     }
 
     /**

@@ -25,9 +25,8 @@
 package org.apache.commonskt.math
 
 import org.apache.commonskt.assert
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
+import org.apache.commonskt.math.BigInteger.Companion.LONG_MASK
+import kotlin.math.*
 
 /**
  * A class used to represent multiprecision integers that makes efficient
@@ -46,6 +45,7 @@ import kotlin.math.min
  * @author  Timothy Buktu
  * @since   1.3
  */
+@ExperimentalUnsignedTypes
 @ExperimentalStdlibApi
 internal open class MutableBigInteger {
     /**
@@ -1728,6 +1728,96 @@ internal open class MutableBigInteger {
      */
     private fun unsignedLongCompare(one: Long, two: Long): Boolean {
         return one + Long.MIN_VALUE > two + Long.MIN_VALUE
+    }
+
+    /**
+     * Calculate the integer square root `floor(sqrt(this))` where
+     * `sqrt(.)` denotes the mathematical square root. The contents of
+     * `this` are **not** changed. The value of `this` is assumed
+     * to be non-negative.
+     *
+     * @implNote The implementation is based on the material in Henry S. Warren,
+     * Jr., *Hacker's Delight (2nd ed.)* (Addison Wesley, 2013), 279-282.
+     *
+     * @throws ArithmeticException if the value returned by `bitLength()`
+     * overflows the range of `int`.
+     * @return the integer square root of `this`
+     * @since 9
+     */
+    open fun sqrt(): MutableBigInteger {
+        // Special cases.
+        if (this.isZero) {
+            return MutableBigInteger(0)
+        } else if (value.size == 1 && value[0].toLong() and LONG_MASK < 4) {
+            // result is unity
+            return ONE
+        }
+        if (bitLength() <= 63) {
+            // Initial estimate is the square root of the positive long value.
+            val v: Long = BigInteger(value, 1).toLongExact()
+            var xk = floor(sqrt(v.toDouble())).toLong()
+
+            // Refine the estimate.
+            do {
+                val xk1 = (xk + v / xk) / 2
+
+                // Terminate when non-decreasing.
+                if (xk1 >= xk) {
+                    return MutableBigInteger(
+                        intArrayOf(
+                            (xk ushr 32).toInt(), (xk and LONG_MASK).toInt()
+                        )
+                    )
+                }
+                xk = xk1
+            } while (true)
+        } else {
+            // Set up the initial estimate of the iteration.
+
+            // Obtain the bitLength > 63.
+            val bitLength = bitLength().toInt()
+            if (bitLength.toLong() != bitLength()) {
+                throw ArithmeticException("bitLength() integer overflow")
+            }
+
+            // Determine an even valued right shift into positive long range.
+            var shift = bitLength - 63
+            if (shift % 2 == 1) {
+                shift++
+            }
+
+            // Shift the value into positive long range.
+            var xk = MutableBigInteger(this)
+            xk.rightShift(shift)
+            xk.normalize()
+
+            // Use the square root of the shifted value as an approximation.
+            val d: Double = BigInteger(xk.value, 1).toDouble()
+            val bi =
+                BigInteger.valueOf(ceil(sqrt(d)).toLong())
+            xk = MutableBigInteger(bi.mag)
+
+            // Shift the approximate square root back into the original range.
+            xk.leftShift(shift / 2)
+
+            // Refine the estimate.
+            val xk1 = MutableBigInteger()
+            do {
+                // xk1 = (xk + n/xk)/2
+                this.divide(xk, xk1, false)
+                xk1.add(xk)
+                xk1.rightShift(1)
+
+                // Terminate when non-decreasing.
+                if (xk1.compare(xk) >= 0) {
+                    return xk
+                }
+
+                // xk = xk1
+                xk.copyValue(xk1)
+                xk1.reset()
+            } while (true)
+        }
     }
 
     /**
