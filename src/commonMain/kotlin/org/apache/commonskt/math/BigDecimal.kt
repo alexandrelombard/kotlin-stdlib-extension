@@ -358,9 +358,9 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      */
     constructor(`in`: CharArray, offset: Int = 0, len: Int = `in`.size, mc: MathContext = MathContext.UNLIMITED) {
         // protect against huge length, negative values, and integer overflow
-        var offset = offset
-        var len = len
-        if (`in`.size or len or offset < 0 || len > `in`.size - offset) {
+        var localOffset = offset
+        var localLen = len
+        if (`in`.size or localLen or localOffset < 0 || localLen > `in`.size - localOffset) {
             throw NumberFormatException("Bad offset or len arguments for char[] input.")
         }
 
@@ -379,35 +379,35 @@ class BigDecimal : Number, Comparable<BigDecimal> {
         try {
             // handle the sign
             var isneg = false // assume positive
-            if (`in`[offset] == '-') {
+            if (`in`[localOffset] == '-') {
                 isneg = true // leading minus means negative
-                offset++
-                len--
-            } else if (`in`[offset] == '+') { // leading + allowed
-                offset++
-                len--
+                localOffset++
+                localLen--
+            } else if (`in`[localOffset] == '+') { // leading + allowed
+                localOffset++
+                localLen--
             }
 
             // should now be at numeric part of the significand
             var dot = false // true when there is a '.'
             var exp: Long = 0 // exponent
             var c: Char // current character
-            val isCompact: Boolean = len <= MAX_COMPACT_DIGITS
+            val isCompact: Boolean = localLen <= MAX_COMPACT_DIGITS
             // integer significand array & idx is the index to it. The array
             // is ONLY used when we can't use a compact representation.
             var idx = 0
             if (isCompact) {
                 // First compact case, we need not to preserve the character
                 // and we can just compute the value in place.
-                while (len > 0) {
-                    c = `in`[offset]
+                while (localLen > 0) {
+                    c = `in`[localOffset]
                     if (c == '0') { // have zero
                         if (prec == 0) prec = 1 else if (rs != 0L) {
                             rs *= 10
                             ++prec
                         } // else digit is a redundant leading zero
                         if (dot) ++scl
-                    } else if (c >= '1' && c <= '9') { // have digit
+                    } else if (c in '1'..'9') { // have digit
                         val digit = c - '0'
                         if (prec != 1 || rs != 0L) ++prec // prec unchanged if preceded by 0s
                         rs = rs * 10 + digit
@@ -429,15 +429,15 @@ class BigDecimal : Number, Comparable<BigDecimal> {
                         }
                         if (dot) ++scl
                     } else if (c == 'e' || c == 'E') {
-                        exp = parseExp(`in`, offset, len)
+                        exp = parseExp(`in`, localOffset, localLen)
                         // Next test is required for backwards compatibility
                         if (exp.toInt().toLong() != exp) throw NumberFormatException()
                         break // [saves a test]
                     } else {
                         throw NumberFormatException()
                     }
-                    offset++
-                    len--
+                    localOffset++
+                    localLen--
                 }
                 if (prec == 0) throw NumberFormatException()
                 // Adjust scale if exp is not zero.
@@ -461,11 +461,11 @@ class BigDecimal : Number, Comparable<BigDecimal> {
                     }
                 }
             } else {
-                val coeff = CharArray(len)
-                while (len > 0) {
-                    c = `in`[offset]
+                val coeff = CharArray(localLen)
+                while (localLen > 0) {
+                    c = `in`[localOffset]
                     // have digit
-                    if (c >= '0' && c <= '9' || Character.isDigit(c)) {
+                    if (c in '0'..'9' || Character.isDigit(c)) {
                         // First compact case, we need not to preserve the character
                         // and we can just compute the value in place.
                         if (c == '0' || Character.digit(c, 10) == 0) {
@@ -481,8 +481,8 @@ class BigDecimal : Number, Comparable<BigDecimal> {
                             coeff[idx++] = c
                         }
                         if (dot) ++scl
-                        offset++
-                        len--
+                        localOffset++
+                        localLen--
                         continue
                     }
                     // have dot
@@ -490,18 +490,20 @@ class BigDecimal : Number, Comparable<BigDecimal> {
                         // have dot
                         if (dot) throw NumberFormatException()
                         dot = true
-                        offset++
-                        len--
+                        localOffset++
+                        localLen--
                         continue
                     }
                     // exponent expected
-                    if (c != 'e' && c != 'E') throw NumberFormatException()
-                    exp = parseExp(`in`, offset, len)
+                    if (c != 'e' && c != 'E')
+                        throw NumberFormatException()
+                    exp = parseExp(`in`, localOffset, localLen)
                     // Next test is required for backwards compatibility
-                    if (exp.toInt().toLong() != exp) throw NumberFormatException()
+                    if (exp.toInt().toLong() != exp)
+                        throw NumberFormatException()
                     break // [saves a test]
-                    offset++
-                    len--
+                    localOffset++
+                    localLen--
                 }
                 // here when no characters left
                 if (prec == 0) throw NumberFormatException()

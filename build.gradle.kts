@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform") version "1.3.71"
+    kotlin("multiplatform") version "1.3.72"
     id("maven-publish")
 }
 
@@ -33,9 +33,19 @@ kotlin {
                 implementation(kotlin("stdlib"))
             }
         }
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test-junit"))
+            }
+        }
         val jsMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-js"))
+            }
+        }
+        val jsTest by getting {
+            dependencies {
+                implementation(kotlin("test-js"))
             }
         }
     }

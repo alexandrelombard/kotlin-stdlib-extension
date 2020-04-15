@@ -158,25 +158,6 @@ class MathContext {
     }
 
     /**
-     * Returns the roundingMode setting.
-     * This will be one of
-     * [RoundingMode.CEILING],
-     * [RoundingMode.DOWN],
-     * [RoundingMode.FLOOR],
-     * [RoundingMode.HALF_DOWN],
-     * [RoundingMode.HALF_EVEN],
-     * [RoundingMode.HALF_UP],
-     * [RoundingMode.UNNECESSARY], or
-     * [RoundingMode.UP].
-     *
-     * @return a `RoundingMode` object which is the value of the
-     * `roundingMode` setting
-     */
-    fun getRoundingMode(): RoundingMode? {
-        return roundingMode
-    }
-
-    /**
      * Compares this `MathContext` with the specified
      * `Object` for equality.
      *

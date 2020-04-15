@@ -2,11 +2,15 @@ package org.apache.commonskt.math
 
 import org.apache.commonskt.assert
 import org.apache.commonskt.io.eprintln
+import org.apache.commonskt.lang.Character
 import org.apache.commonskt.lang.DoubleConsts
 import kotlin.experimental.and
 import kotlin.experimental.or
+import kotlin.math.abs
 import kotlin.math.min
+import kotlin.math.sqrt
 import kotlin.random.Random
+import kotlin.test.Test
 
 /*
  * Copyright (c) 1998, 2017, Oracle and/or its affiliates. All rights reserved.
@@ -45,47 +49,56 @@ import kotlin.random.Random
  * throw in boundary numbers such as 0, 1, maximum sized, etc.
  *
  */
+
+//
+// Bit large number thresholds based on the int thresholds
+// defined in BigInteger itself:
+//
+// KARATSUBA_THRESHOLD        = 80  ints = 2560 bits
+// TOOM_COOK_THRESHOLD        = 240 ints = 7680 bits
+// KARATSUBA_SQUARE_THRESHOLD = 128 ints = 4096 bits
+// TOOM_COOK_SQUARE_THRESHOLD = 216 ints = 6912 bits
+//
+// SCHOENHAGE_BASE_CONVERSION_THRESHOLD = 20 ints = 640 bits
+//
+// BURNIKEL_ZIEGLER_THRESHOLD = 80  ints = 2560 bits
+//
+const val BITS_KARATSUBA = 2560
+const val BITS_TOOM_COOK = 7680
+const val BITS_KARATSUBA_SQUARE = 4096
+const val BITS_TOOM_COOK_SQUARE = 6912
+const val BITS_SCHOENHAGE_BASE = 640
+const val BITS_BURNIKEL_ZIEGLER = 2560
+const val BITS_BURNIKEL_ZIEGLER_OFFSET = 1280
+const val ORDER_SMALL = 60
+const val ORDER_MEDIUM = 100
+
+// #bits for testing Karatsuba
+const val ORDER_KARATSUBA = 2760
+
+// #bits for testing Toom-Cook and Burnikel-Ziegler
+const val ORDER_TOOM_COOK = 8000
+
+// #bits for testing Karatsuba squaring
+const val ORDER_KARATSUBA_SQUARE = 4200
+
+// #bits for testing Toom-Cook squaring
+const val ORDER_TOOM_COOK_SQUARE = 7000
+const val SIZE = 1000 // numbers per batch
+
+// Note: testing the larger ones takes too long.
+private const val NUM_MERSENNES_TO_TEST = 7
+
+// Note: this constant used for computed Carmichaels, not the array above
+private const val NUM_CARMICHAELS_TO_TEST = 5
+
 @ExperimentalUnsignedTypes
 @ExperimentalStdlibApi
-object BigIntegerTest {
-    //
-    // Bit large number thresholds based on the int thresholds
-    // defined in BigInteger itself:
-    //
-    // KARATSUBA_THRESHOLD        = 80  ints = 2560 bits
-    // TOOM_COOK_THRESHOLD        = 240 ints = 7680 bits
-    // KARATSUBA_SQUARE_THRESHOLD = 128 ints = 4096 bits
-    // TOOM_COOK_SQUARE_THRESHOLD = 216 ints = 6912 bits
-    //
-    // SCHOENHAGE_BASE_CONVERSION_THRESHOLD = 20 ints = 640 bits
-    //
-    // BURNIKEL_ZIEGLER_THRESHOLD = 80  ints = 2560 bits
-    //
-    const val BITS_KARATSUBA = 2560
-    const val BITS_TOOM_COOK = 7680
-    const val BITS_KARATSUBA_SQUARE = 4096
-    const val BITS_TOOM_COOK_SQUARE = 6912
-    const val BITS_SCHOENHAGE_BASE = 640
-    const val BITS_BURNIKEL_ZIEGLER = 2560
-    const val BITS_BURNIKEL_ZIEGLER_OFFSET = 1280
-    const val ORDER_SMALL = 60
-    const val ORDER_MEDIUM = 100
+class BigIntegerTest {
 
-    // #bits for testing Karatsuba
-    const val ORDER_KARATSUBA = 2760
-
-    // #bits for testing Toom-Cook and Burnikel-Ziegler
-    const val ORDER_TOOM_COOK = 8000
-
-    // #bits for testing Karatsuba squaring
-    const val ORDER_KARATSUBA_SQUARE = 4200
-
-    // #bits for testing Toom-Cook squaring
-    const val ORDER_TOOM_COOK_SQUARE = 7000
-    const val SIZE = 1000 // numbers per batch
     private val random = Random.Default
     var failure = false
-    @ExperimentalStdlibApi
+
     fun constructor() {
         var failCount = 0
 
@@ -321,38 +334,31 @@ object BigIntegerTest {
             sb.sumBy(f)
         )
         random.nextInt()
-        val ints: IntStream = random.ints(SIZE.toLong(), 4, Int.MAX_VALUE)
+        val ints = (0..SIZE).map { random.nextInt(4, Int.MAX_VALUE) }
         report(
             "squareRoot for int",
-            ints.mapToObj({ x: Int ->
+            ints.map { x: Int ->
                 BigInteger.valueOf(x.toLong())
-            }).collect(Collectors.summingInt(f))
+            }.sumBy(f)
         )
-        val longs: LongStream = random.longs(
-            SIZE.toLong(),
-            Int.MAX_VALUE.toLong() + 1L,
-            Long.MAX_VALUE
-        )
+        val longs = (0..SIZE).map { random.nextLong(Int.MAX_VALUE.toLong() + 1L, Long.MAX_VALUE) }
         report(
             "squareRoot for long",
-            longs.mapToObj({ x: Long ->
+            longs.map { x: Long ->
                 BigInteger.valueOf(x)
-            }).collect(Collectors.summingInt(f))
+            }.sumBy(f)
         )
-        val doubles: DoubleStream = random.doubles(
-            SIZE.toLong(),
-            Long.MAX_VALUE.toDouble() + 1.0, java.lang.Math.sqrt(Double.MAX_VALUE)
-        )
+        val doubles = (0..SIZE).map { random.nextDouble(Long.MAX_VALUE.toDouble() + 1.0, sqrt(Double.MAX_VALUE)) }
         report(
             "squareRoot for double",
-            doubles.mapToObj({ x: Double ->
+            doubles.map { x: Double ->
                 BigDecimal.valueOf(x).toBigInteger()
-            }).collect(Collectors.summingInt(f))
+            }.sumBy(f)
         )
     }
 
     fun squareRootAndRemainder() {
-        val g: ToIntFunction<BigInteger> = ToIntFunction<BigInteger> { n: BigInteger ->
+        val g: (BigInteger) -> Int = { n: BigInteger ->
             var failCount = 0
             val n2: BigInteger = n.pow(2)
 
@@ -381,13 +387,12 @@ object BigIntegerTest {
             failCount += checkResult(r, actual[1], "sqrtAndRemainder()[1]")
             failCount
         }
-        val bits: IntStream =
-            random.ints(SIZE.toLong(), 3, Short.MAX_VALUE.toInt())
+        val bits = (0..SIZE).map { random.nextInt(3, Short.MAX_VALUE.toInt()) }
         report(
             "sqrtAndRemainder",
-            bits.mapToObj(IntFunction<BigInteger> { x: Int ->
+            bits.map { x: Int ->
                 BigInteger.valueOf(x.toLong())
-            }).collect(Collectors.summingInt(g))
+            }.sumBy(g)
         )
     }
 
@@ -642,7 +647,7 @@ object BigIntegerTest {
 
             // Test flipBit (and testBit)
             y = BigInteger.valueOf(if (x.signum() < 0) -1 else 0.toLong())
-            for (j in 0 until x.bitLength()) if (x.signum() < 0 xor x.testBit(j)) y = y.flipBit(j)
+            for (j in 0 until x.bitLength()) if ((x.signum() < 0) xor x.testBit(j)) y = y.flipBit(j)
             if (x != y) failCount2++
         }
         report("clearBit/testBit for $order bits", failCount1)
@@ -651,7 +656,7 @@ object BigIntegerTest {
             val x = fetchNumber(order)
 
             // Test getLowestSetBit()
-            val k: Int = x.getLowestSetBit()
+            val k: Int = x.lowestSetBit
             if (x.signum() == 0) {
                 if (k != -1) failCount3++
             } else {
@@ -698,7 +703,7 @@ object BigIntegerTest {
         var failCount3 = 0
         for (i in 0..99) {
             val x = fetchNumber(order)
-            val n: Int = java.lang.Math.abs(random.nextInt() % 200)
+            val n: Int = abs(random.nextInt() % 200)
             if (x.shiftLeft(n) != x.multiply(BigInteger.valueOf(2L).pow(n))) failCount1++
             val y: Array<BigInteger> = x.divideAndRemainder(BigInteger.valueOf(2L).pow(n))
             val z: BigInteger = if (x.signum() < 0 && y[1].signum() != 0) y[0]
@@ -724,7 +729,7 @@ object BigIntegerTest {
         for (i in 0 until SIZE) {
             var x: BigInteger = fetchNumber(order).abs()
             while (x.compareTo(BigInteger.valueOf(3L)) != 1) x = fetchNumber(order).abs()
-            val z: BigInteger = x.divide(BigInteger.valueOf(2L))
+            val z: BigInteger? = x.divide(BigInteger.valueOf(2L))
             var y: Array<BigInteger> = x.divideAndRemainder(x)
             if (y[0] != BigInteger.ONE) {
                 failCount1++
@@ -735,7 +740,7 @@ object BigIntegerTest {
                 eprintln("fail2 x :$x")
                 eprintln("      y :$y")
             }
-            y = x.divideAndRemainder(z)
+            y = x.divideAndRemainder(z!!)
             if (y[0] != BigInteger.valueOf(2)) {
                 failCount1++
                 eprintln("fail3 x :$x")
@@ -751,17 +756,17 @@ object BigIntegerTest {
         // Generic string conversion.
         for (i in 0..99) {
             val xBytes =
-                ByteArray(java.lang.Math.abs(random.nextInt()) % 100 + 1)
+                ByteArray(abs(random.nextInt()) % 100 + 1)
             random.nextBytes(xBytes)
             val x: BigInteger = BigInteger(xBytes)
-            for (radix in java.lang.Character.MIN_RADIX until java.lang.Character.MAX_RADIX) {
+            for (radix in Character.MIN_RADIX until Character.MAX_RADIX) {
                 val result: String = x.toString(radix)
                 val test: BigInteger = BigInteger(result, radix)
                 if (test != x) {
                     failCount++
                     eprintln("BigInteger toString: $x")
                     eprintln("Test: $test")
-                    eprintln(radix)
+                    eprintln(radix.toString())
                 }
             }
         }
@@ -776,14 +781,14 @@ object BigIntegerTest {
                 for (i in 0..49) {
                     val x: BigInteger = BigInteger.ONE.shiftLeft(bits - 1)
                         .or(BigInteger(bits - 2, random))
-                    for (radix in java.lang.Character.MIN_RADIX until java.lang.Character.MAX_RADIX) {
+                    for (radix in Character.MIN_RADIX until Character.MAX_RADIX) {
                         val result: String = x.toString(radix)
                         val test: BigInteger = BigInteger(result, radix)
                         if (test != x) {
                             failCount++
                             eprintln("BigInteger toString: $x")
                             eprintln("Test: $test")
-                            eprintln(radix)
+                            eprintln(radix.toString())
                         }
                     }
                 }
@@ -836,7 +841,7 @@ object BigIntegerTest {
             val base = fetchNumber(order2)
             val exp: BigInteger = fetchNumber(8).abs()
             val z: BigInteger = base.modPow(exp, m)
-            val w: BigInteger = base.pow(exp.intValue()).mod(m)
+            val w: BigInteger = base.pow(exp.toInt()).rem(m)
             if (z != w) {
                 eprintln("z is $z")
                 eprintln("w is $w")
@@ -887,11 +892,6 @@ object BigIntegerTest {
         225593397919L
     )
 
-    // Note: testing the larger ones takes too long.
-    private const val NUM_MERSENNES_TO_TEST = 7
-
-    // Note: this constant used for computed Carmichaels, not the array above
-    private const val NUM_CARMICHAELS_TO_TEST = 5
     private val customer_primes = arrayOf(
         "120000000000000000000000000000000019",
         "633825300114114700748351603131",
@@ -1024,7 +1024,6 @@ object BigIntegerTest {
         1999999853L, 1999999861L, 1999999871L, 1999999873
     )
 
-    @Throws(Exception::class)
     fun nextProbablePrime() {
         var failCount = 0
         var p1: BigInteger
@@ -1037,7 +1036,7 @@ object BigIntegerTest {
         // First test nextProbablePrime on the low range starting at zero
         for (i in primesTo100.indices) {
             p1 = p1.nextProbablePrime()
-            if (p1.longValue() != primesTo100[i]) {
+            if (p1.toLong() != primesTo100[i]) {
                 eprintln("low range primes failed")
                 eprintln("p1 is $p1")
                 eprintln("expected " + primesTo100[i])
@@ -1049,7 +1048,7 @@ object BigIntegerTest {
         p1 = BigInteger.valueOf(aPrimeSequence[0])
         for (i in 1 until aPrimeSequence.size) {
             p1 = p1.nextProbablePrime()
-            if (p1.longValue() != aPrimeSequence[i]) {
+            if (p1.toLong() != aPrimeSequence[i]) {
                 eprintln("prime sequence failed")
                 failCount++
             }
@@ -1077,72 +1076,6 @@ object BigIntegerTest {
         report("nextProbablePrime", failCount)
     }
 
-    @Throws(Exception::class)
-    fun serialize() {
-        var failCount = 0
-        val bitPatterns = arrayOf(
-            "ffffffff00000000ffffffff00000000ffffffff00000000",
-            "ffffffffffffffffffffffff000000000000000000000000",
-            "ffffffff0000000000000000000000000000000000000000",
-            "10000000ffffffffffffffffffffffffffffffffffffffff",
-            "100000000000000000000000000000000000000000000000",
-            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            "-ffffffff00000000ffffffff00000000ffffffff00000000",
-            "-ffffffffffffffffffffffff000000000000000000000000",
-            "-ffffffff0000000000000000000000000000000000000000",
-            "-10000000ffffffffffffffffffffffffffffffffffffffff",
-            "-100000000000000000000000000000000000000000000000",
-            "-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-        )
-        for (i in bitPatterns.indices) {
-            val b1: BigInteger = BigInteger(bitPatterns[i], 16)
-            var b2: BigInteger? = null
-            val f: java.io.File = java.io.File("serialtest")
-            FileOutputStream(f).use({ fos ->
-                ObjectOutputStream(fos).use({ oos ->
-                    oos.writeObject(b1)
-                    oos.flush()
-                })
-                FileInputStream(f).use({ fis ->
-                    ObjectInputStream(fis).use({ ois ->
-                        b2 = ois.readObject() as BigInteger?
-                    })
-                })
-                if (b1 != b2 ||
-                    b1 != b1.or(b2)
-                ) {
-                    failCount++
-                    eprintln(
-                        "Serialized failed for hex " +
-                                b1.toString(16)
-                    )
-                }
-            })
-            f.delete()
-        }
-        for (i in 0..9) {
-            val b1 = fetchNumber(random.nextInt(100))
-            var b2: BigInteger? = null
-            val f: java.io.File = java.io.File("serialtest")
-            FileOutputStream(f).use({ fos ->
-                ObjectOutputStream(fos).use({ oos ->
-                    oos.writeObject(b1)
-                    oos.flush()
-                })
-                FileInputStream(f).use({ fis ->
-                    ObjectInputStream(fis).use({ ois ->
-                        b2 = ois.readObject() as BigInteger?
-                    })
-                })
-            })
-            if (b1 != b2 ||
-                b1 != b1.or(b2)
-            ) failCount++
-            f.delete()
-        }
-        report("Serialize", failCount)
-    }
-
     /**
      * Main to interpret arguments and run several tests.
      *
@@ -1151,16 +1084,17 @@ object BigIntegerTest {
      * the maximum number of decimal digits that the parameters will have.
      *
      */
-    fun main(args: Array<String>) {
+    @Test
+    fun main() {
         // Some variables for sizing test numbers in bits
-        var order1 = ORDER_MEDIUM
-        var order2 = ORDER_SMALL
-        var order3 = ORDER_KARATSUBA
-        var order4 = ORDER_TOOM_COOK
-        if (args.size > 0) order1 = (args[0].toInt() * 3.333).toInt()
-        if (args.size > 1) order2 = (args[1].toInt() * 3.333).toInt()
-        if (args.size > 2) order3 = (args[2].toInt() * 3.333).toInt()
-        if (args.size > 3) order4 = (args[3].toInt() * 3.333).toInt()
+        val order1 = ORDER_MEDIUM
+        val order2 = ORDER_SMALL
+        val order3 = ORDER_KARATSUBA
+        val order4 = ORDER_TOOM_COOK
+//        if (args.size > 0) order1 = (args[0].toInt() * 3.333).toInt()
+//        if (args.size > 1) order2 = (args[1].toInt() * 3.333).toInt()
+//        if (args.size > 2) order3 = (args[2].toInt() * 3.333).toInt()
+//        if (args.size > 3) order4 = (args[3].toInt() * 3.333).toInt()
         constructor()
         prime()
         nextProbablePrime()
@@ -1190,7 +1124,6 @@ object BigIntegerTest {
         modExp(order1, order2)
         modExp2(order1)
         stringConv()
-        serialize()
         multiplyLarge()
         squareLarge()
         divideLarge()
@@ -1222,7 +1155,7 @@ object BigIntegerTest {
                     i++
                 }
                 val excessBits = 8 * numBytes - order
-                fullBits[0] = fullBits[0] and (1 shl 8 - excessBits) - 1
+                fullBits[0] = fullBits[0] and ((1 shl 8 - excessBits) - 1).toByte()
                 result = BigInteger(1, fullBits)
             }
             3 -> result = BigInteger.ONE.shiftLeft(random.nextInt(order))
@@ -1232,7 +1165,7 @@ object BigIntegerTest {
                 var i = 0
                 while (i < iterations) {
                     val bitIdx: Int = random.nextInt(order)
-                    `val`[bitIdx / 8] = `val`[bitIdx / 8] or (1 shl bitIdx % 8)
+                    `val`[bitIdx / 8] = `val`[bitIdx / 8] or (1 shl bitIdx % 8).toByte()
                     i++
                 }
                 result = BigInteger(1, `val`)
@@ -1243,7 +1176,7 @@ object BigIntegerTest {
                 var bit: Int = random.nextInt(2)
                 while (remaining > 0) {
                     val runLength: Int = min(remaining, random.nextInt(order))
-                    result = result.shiftLeft(runLength)
+                    result = result!!.shiftLeft(runLength)
                     if (bit > 0) result =
                         result.add(ONE.shiftLeft(runLength).subtract(ONE))
                     remaining -= runLength
@@ -1252,8 +1185,8 @@ object BigIntegerTest {
             }
             else -> result = BigInteger(order, random)
         }
-        if (negative) result = result.negate()
-        return result
+        if (negative) result = result!!.negate()
+        return result!!
     }
 
     fun report(testName: String, failCount: Int) {

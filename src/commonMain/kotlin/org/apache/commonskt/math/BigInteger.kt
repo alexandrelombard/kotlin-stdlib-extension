@@ -469,7 +469,7 @@ class BigInteger : Number, Comparable<BigInteger> {
 
         // Process remaining digit groups
         val superRadix: Int = intRadix[radix]
-        var groupVal = 0
+        var groupVal: Int
         while (cursor < len) {
             group = `val`.substring(
                 cursor,
@@ -806,21 +806,21 @@ class BigInteger : Number, Comparable<BigInteger> {
      * Constructs a BigInteger with the specified value, which may not be zero.
      */
     private constructor(`val`: Long) {
-        var `val` = `val`
-        if (`val` < 0) {
-            `val` = -`val`
+        var localVal = `val`
+        if (localVal < 0) {
+            localVal = -localVal
             signum = -1
         } else {
             signum = 1
         }
-        val highWord = (`val` ushr 32).toInt()
+        val highWord = (localVal ushr 32).toInt()
         if (highWord == 0) {
             mag = IntArray(1)
-            mag[0] = `val`.toInt()
+            mag[0] = localVal.toInt()
         } else {
             mag = IntArray(2)
             mag[0] = highWord
-            mag[1] = `val`.toInt()
+            mag[1] = localVal.toInt()
         }
     }
 
@@ -1055,7 +1055,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             var searchSieve = BitSieve(p, searchLen)
             var candidate: BigInteger? = searchSieve.retrieve(p, certainty, rnd)
             while (candidate == null || candidate.bitLength() != bitLength) {
-                p = p.add(valueOf(2 * searchLen.toLong())!!)
+                p = p.add(valueOf(2 * searchLen.toLong()))
                 if (p.bitLength() != bitLength) p = BigInteger(bitLength, rnd).setBit(bitLength - 1)
                 p.mag[p.mag.size - 1] = p.mag[p.mag.size - 1] and -0x2
                 searchSieve = BitSieve(p, searchLen)
@@ -1170,7 +1170,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         fun valueOf(`val`: Long): BigInteger {
             // If -MAX_CONSTANT < val < MAX_CONSTANT, return stashed constant
             if (`val` == 0L) return ZERO
-            if (`val` in 1..MAX_CONSTANT) return posConst[`val`.toInt()]!! else if (`val` < 0 && `val` >= -MAX_CONSTANT) return negConst[(-`val`).toInt()]!!
+            if (`val` in 1..MAX_CONSTANT) return posConst[`val`.toInt()] else if (`val` < 0 && `val` >= -MAX_CONSTANT) return negConst[(-`val`).toInt()]!!
             return BigInteger(`val`)
         }
 
@@ -1653,13 +1653,13 @@ class BigInteger : Number, Comparable<BigInteger> {
          * int array z.  The contents of x are not changed.
          */
         private fun squareToLen(x: IntArray, len: Int, z: IntArray?): IntArray {
-            var z: IntArray? = z
+            var localZ: IntArray? = z
             val zlen = len shl 1
-            if (z == null || z.size < zlen) z = IntArray(zlen)
+            if (localZ == null || localZ.size < zlen) localZ = IntArray(zlen)
 
             // Execute checks before calling intrinsified method.
-            implSquareToLenChecks(x, len, z, zlen)
-            return implSquareToLen(x, len, z, zlen)
+            implSquareToLenChecks(x, len, localZ, zlen)
+            return implSquareToLen(x, len, localZ, zlen)
         }
 
         /**
