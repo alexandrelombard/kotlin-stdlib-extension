@@ -255,7 +255,25 @@ class BigInteger : Number, Comparable<BigInteger> {
      * negative or greater than or equal to the array length.
      * @since 9
      */
-    constructor(`val`: ByteArray, off: Int, len: Int) : this(`val`.copyOfRange(off, off + len))
+    constructor(`val`: ByteArray, off: Int, len: Int) {
+        if(off < 0) throw IndexOutOfBoundsException()
+        if(len < 0) throw IndexOutOfBoundsException()
+        if(off + len > `val`.size) throw IndexOutOfBoundsException()
+
+        val localVal = `val`.copyOfRange(off, off + len)
+
+        if (localVal.isEmpty()) throw NumberFormatException("Zero length BigInteger")
+        if (localVal[0] < 0) {
+            mag = makePositive(localVal)
+            signum = -1
+        } else {
+            mag = stripLeadingZeroBytes(localVal)
+            signum = if (mag.isEmpty()) 0 else 1
+        }
+        if (mag.size >= MAX_MAG_LENGTH) {
+            checkRange()
+        }
+    }
 
     /**
      * Translates a byte array containing the two's-complement binary
@@ -330,8 +348,23 @@ class BigInteger : Number, Comparable<BigInteger> {
      *         negative or greater than or equal to the array length.
      * @since 9
      */
-    constructor(signum: Int, magnitude: ByteArray, off: Int, len: Int) :
-            this(signum, magnitude.copyOfRange(off, off + len))
+    constructor(signum: Int, magnitude: ByteArray, off: Int, len: Int) {
+        if(off < 0) throw IndexOutOfBoundsException()
+        if(len < 0) throw IndexOutOfBoundsException()
+        if(off + len > magnitude.size) throw IndexOutOfBoundsException()
+
+        mag = stripLeadingZeroBytes(magnitude)
+        if (signum < -1 || signum > 1) throw NumberFormatException("Invalid signum value")
+        if (mag.isEmpty()) {
+            this.signum = 0
+        } else {
+            if (signum == 0) throw NumberFormatException("signum-magnitude mismatch")
+            this.signum = signum
+        }
+        if (mag.size >= MAX_MAG_LENGTH) {
+            checkRange()
+        }
+    }
     /**
      * Translates the sign-magnitude representation of a BigInteger into a
      * BigInteger.  The sign is represented as an integer signum value: -1 for
