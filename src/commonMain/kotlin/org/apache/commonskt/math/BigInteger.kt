@@ -31,6 +31,7 @@ import org.apache.commonskt.PublicApi
 import org.apache.commonskt.assert
 import org.apache.commonskt.collections.copyOf
 import org.apache.commonskt.lang.*
+import org.apache.commonskt.util.Objects
 import kotlin.experimental.and
 import kotlin.math.*
 import kotlin.random.Random
@@ -256,9 +257,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @since 9
      */
     constructor(`val`: ByteArray, off: Int, len: Int) {
-        if(off < 0) throw IndexOutOfBoundsException()
-        if(len < 0) throw IndexOutOfBoundsException()
-        if(off + len > `val`.size) throw IndexOutOfBoundsException()
+        Objects.checkFromIndexSize(off, len, `val`.size)
 
         val localVal = `val`.copyOfRange(off, off + len)
 
@@ -349,9 +348,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @since 9
      */
     constructor(signum: Int, magnitude: ByteArray, off: Int, len: Int) {
-        if(off < 0) throw IndexOutOfBoundsException()
-        if(len < 0) throw IndexOutOfBoundsException()
-        if(off + len > magnitude.size) throw IndexOutOfBoundsException()
+        Objects.checkFromIndexSize(off, len, magnitude.size)
 
         mag = stripLeadingZeroBytes(magnitude)
         if (signum < -1 || signum > 1) throw NumberFormatException("Invalid signum value")
