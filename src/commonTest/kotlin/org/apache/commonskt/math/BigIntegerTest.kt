@@ -1142,10 +1142,26 @@ class BigIntegerTest {
                 val b1 = fetchNumber(ORDER_SMALL)
                 val b2 = fetchNumber(ORDER_SMALL)
                 val add = b1.add(b2)
-                eprintln("$b1 $b2 $add")
                 assertEquals(b1.toLongExact() + b2.toLongExact(), add.toLongExact())
             } catch (e: ArithmeticException) {
                 // Result is too large to be stored in a single long
+            }
+        }
+    }
+
+    @Test
+    fun testDivideSmall() {
+        for(i in 0..SIZE) {
+            try {
+                val b1 = fetchNumber(ORDER_SMALL)
+                val b2 = fetchNumber(ORDER_SMALL)
+                val div = b1.divide(b2)
+                val error = b1.toLongExact() / b2.toLongExact() != div!!.toLongExact()
+                val div2 = b1.divide(b2)
+                eprintln("$b1 $b2 $div ${b1.signum} ${b2.signum} ${b1.mag.size} ${b2.mag.size}")
+                assertEquals(b1.toLongExact() / b2.toLongExact(), div!!.toLongExact())
+            } catch (e: ArithmeticException) {
+                // Divide by zero
             }
         }
     }
@@ -1161,8 +1177,9 @@ class BigIntegerTest {
         var order = order
         val negative: Boolean = random.nextBoolean()
         val numType: Int = random.nextInt(7)
-        var result: BigInteger? = null
+        var result: BigInteger?
         if (order < 2) order = 2
+        eprintln(numType.toString())
         when (numType) {
             0 -> result = BigInteger.ZERO
             1 -> result = BigInteger.ONE
@@ -1185,28 +1202,30 @@ class BigIntegerTest {
                 var i = 0
                 while (i < iterations) {
                     val bitIdx: Int = random.nextInt(order)
-                    `val`[bitIdx / 8] = `val`[bitIdx / 8] or (1 shl bitIdx % 8).toByte()
+                    `val`[bitIdx / 8] = `val`[bitIdx / 8] or (1 shl (bitIdx % 8)).toByte()
                     i++
                 }
+                if(`val`[0] == 0.toByte()) `val`[0]++
                 result = BigInteger(1, `val`)
             }
             5 -> {
-                result = ZERO
+                var localResult = ZERO
                 var remaining = order
-                var bit: Int = random.nextInt(2)
+                var bit = random.nextInt(2)
                 while (remaining > 0) {
-                    val runLength: Int = min(remaining, random.nextInt(order))
-                    result = result!!.shiftLeft(runLength)
-                    if (bit > 0) result =
-                        result.add(ONE.shiftLeft(runLength).subtract(ONE))
+                    val runLength = min(remaining, random.nextInt(order))
+                    localResult = localResult.shiftLeft(runLength)
+                    if (bit > 0)
+                        localResult = localResult.add(ONE.shiftLeft(runLength).subtract(ONE))
                     remaining -= runLength
                     bit = 1 - bit
                 }
+                result = localResult
             }
             else -> result = BigInteger(order, random)
         }
-        if (negative) result = result!!.negate()
-        return result!!
+        if (negative) result = result.negate()
+        return result
     }
 
     fun report(testName: String, failCount: Int) {

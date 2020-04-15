@@ -600,10 +600,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @throws IllegalArgumentException `numBits` is negative.
      * @see .bitLength
      */
-    constructor(numBits: Int, rnd: Random) : this(
-        1,
-        randomBits(numBits, rnd)
-    )
+    constructor(numBits: Int, rnd: Random) : this(1, randomBits(numBits, rnd))
 
     /**
      * Constructs a randomly generated positive BigInteger that is probably

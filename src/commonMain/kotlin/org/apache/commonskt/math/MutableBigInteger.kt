@@ -132,10 +132,11 @@ internal open class MutableBigInteger {
      * supposed to modify the returned array.
      */
     private val magnitudeArray: IntArray
-        get() = if (offset > 0 || value.size != intLen) value.copyOfRange(
-            offset,
-            offset + intLen
-        ) else value
+        get() =
+            if (offset > 0 || value.size != intLen)
+                value.copyOfRange(offset, offset + intLen)
+            else
+                value
 
     /**
      * Convert this MutableBigInteger to a long value. The caller has to make
@@ -241,8 +242,8 @@ internal open class MutableBigInteger {
         var i = offset
         var j: Int = b.offset
         while (i < intLen + offset) {
-            val b1 = value[i] + -0x80000000
-            val b2 = bval[j] + -0x80000000
+            val b1 = value[i] + 0x80000000
+            val b2 = bval[j] + 0x80000000
             if (b1 < b2) return -1
             if (b1 > b2) return 1
             i++
