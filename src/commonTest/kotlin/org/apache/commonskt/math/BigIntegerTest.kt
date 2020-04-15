@@ -11,6 +11,7 @@ import kotlin.math.min
 import kotlin.math.sqrt
 import kotlin.random.Random
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 /*
  * Copyright (c) 1998, 2017, Oracle and/or its affiliates. All rights reserved.
@@ -1099,9 +1100,9 @@ class BigIntegerTest {
 //        if (args.size > 1) order2 = (args[1].toInt() * 3.333).toInt()
 //        if (args.size > 2) order3 = (args[2].toInt() * 3.333).toInt()
 //        if (args.size > 3) order4 = (args[3].toInt() * 3.333).toInt()
-        constructor()
-        prime()
-        nextProbablePrime()
+//        constructor()
+//        prime()
+//        nextProbablePrime()
         arithmetic(order1) // small numbers
         arithmetic(order3) // Karatsuba range
         arithmetic(order4) // Toom-Cook / Burnikel-Ziegler range
@@ -1132,6 +1133,21 @@ class BigIntegerTest {
         squareLarge()
         divideLarge()
         if (failure) throw RuntimeException("Failure in BigIntegerTest.")
+    }
+
+    @Test
+    fun testAddSmall() {
+        for(i in 0..SIZE) {
+            try {
+                val b1 = fetchNumber(ORDER_SMALL)
+                val b2 = fetchNumber(ORDER_SMALL)
+                val add = b1.add(b2)
+                eprintln("$b1 $b2 $add")
+                assertEquals(b1.toLongExact() + b2.toLongExact(), add.toLongExact())
+            } catch (e: ArithmeticException) {
+                // Result is too large to be stored in a single long
+            }
+        }
     }
 
     /*

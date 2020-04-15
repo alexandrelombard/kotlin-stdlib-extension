@@ -1350,8 +1350,11 @@ class BigInteger : Number, Comparable<BigInteger> {
                 }
             }
             // Copy remainder of longer number while carry propagation is required
-            var carry = sum ushr 32 != 0L
-            while (xIndex > 0 && carry) carry = x[xIndex] + 1.also { result[--xIndex] = it } == 0
+            var carry = (sum ushr 32) != 0L
+            while (xIndex > 0 && carry) {
+                result[--xIndex] = x[xIndex] + 1
+                carry = result[xIndex] == 0
+            }
 
             // Copy remainder of longer number
             while (xIndex > 0) result[--xIndex] = x[xIndex]
@@ -1453,9 +1456,11 @@ class BigInteger : Number, Comparable<BigInteger> {
             }
 
             // Subtract remainder of longer number while borrow propagates
-            var borrow = difference shr 32 != 0L
-            while (bigIndex > 0 && borrow) borrow =
-                big[bigIndex] - 1.also { result[--bigIndex] = it } == -1
+            var borrow = (difference shr 32) != 0L
+            while (bigIndex > 0 && borrow) {
+                result[--bigIndex] = big[bigIndex] - 1
+                borrow = result[bigIndex] == -1
+            }
 
             // Copy remainder of longer number
             while (bigIndex > 0) result[--bigIndex] = big[bigIndex]
