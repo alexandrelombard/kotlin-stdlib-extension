@@ -1,9 +1,11 @@
-package org.apache.commonskt.math
+package org.apache.commonskt.math.biginteger
 
 import org.apache.commonskt.assert
 import org.apache.commonskt.io.eprintln
 import org.apache.commonskt.lang.Character
 import org.apache.commonskt.lang.DoubleConsts
+import org.apache.commonskt.math.BigDecimal
+import org.apache.commonskt.math.BigInteger
 import kotlin.experimental.and
 import kotlin.experimental.or
 import kotlin.math.abs
