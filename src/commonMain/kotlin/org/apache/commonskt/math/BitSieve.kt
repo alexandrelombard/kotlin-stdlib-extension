@@ -46,6 +46,7 @@ import kotlin.random.Random
  * @author  Michael McCloskey
  * @since   1.3
  */
+@ExperimentalUnsignedTypes
 @ExperimentalStdlibApi
 internal class BitSieve {
     /**
@@ -132,7 +133,7 @@ internal class BitSieve {
      */
     private operator fun get(bitIndex: Int): Boolean {
         val unitIndex = unitIndex(bitIndex)
-        return bits[unitIndex] and bit(bitIndex) != 0L
+        return (bits[unitIndex] and bit(bitIndex)) != 0L
     }
 
     /**
@@ -140,7 +141,7 @@ internal class BitSieve {
      */
     private fun set(bitIndex: Int) {
         val unitIndex = unitIndex(bitIndex)
-        bits[unitIndex] = bits[unitIndex] or bit(bitIndex)
+        bits[unitIndex] = (bits[unitIndex] or bit(bitIndex))
     }
 
     /**
@@ -164,10 +165,10 @@ internal class BitSieve {
      * up to the specified limit.
      */
     private fun sieveSingle(limit: Int, start: Int, step: Int) {
-        var start = start
-        while (start < limit) {
-            set(start)
-            start += step
+        var localStart = start
+        while (localStart < limit) {
+            set(localStart)
+            localStart += step
         }
     }
 
@@ -180,7 +181,7 @@ internal class BitSieve {
         for (i in bits.indices) {
             var nextLong = bits[i].inv()
             for (j in 0..63) {
-                if (nextLong and 1 == 1L) {
+                if ((nextLong and 1) == 1L) {
                     val candidate: BigInteger = initValue.add(
                         BigInteger.valueOf(offset.toLong())
                     )
@@ -211,7 +212,7 @@ internal class BitSieve {
          * Return a unit that masks the specified bit in its unit.
          */
         private fun bit(bitIndex: Int): Long {
-            return 1L shl (bitIndex and (1 shl 6) - 1)
+            return 1L shl (bitIndex and ((1 shl 6) - 1))
         }
     }
 }

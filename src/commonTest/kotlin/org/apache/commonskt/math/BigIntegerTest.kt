@@ -172,10 +172,14 @@ class BigIntegerTest {
         val magNonZeroLength = ByteArray(42)
         random.nextBytes(magNonZeroLength)
         for (signum in -1..1) {
-            val bi = BigInteger(signum, magNonZeroLength, 0, 0)
-            if (bi.compareTo(BigInteger.ZERO) != 0) {
-                eprintln("C: Zero length BigInteger != 0 for signum $signum")
-                failCount++
+            try {
+                val bi = BigInteger(signum, magNonZeroLength, 0, 0)
+                if (bi.compareTo(BigInteger.ZERO) != 0) {
+                    eprintln("C: Zero length BigInteger != 0 for signum $signum")
+                    failCount++
+                }
+            } catch (e: NumberFormatException) {
+                // signum is 0 but magnitude is non-null
             }
         }
 
