@@ -12,8 +12,7 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sqrt
 import kotlin.random.Random
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import kotlin.test.*
 
 /*
  * Copyright (c) 1998, 2017, Oracle and/or its affiliates. All rights reserved.
@@ -1155,6 +1154,26 @@ class BigIntegerTest {
     }
 
     @Test
+    fun testAddLarge() {
+        var arithmeticExceptions = 0
+        for(i in 0..SIZE) {
+            try {
+                val b1 = fetchNumber(ORDER_KARATSUBA)
+                val b2 = fetchNumber(ORDER_KARATSUBA)
+                val add = b1.add(b2)
+                val error = abs(b1.toDouble() + b2.toDouble() - add.toDouble()) > 0.1
+                b1.add(b2)
+                assertFalse { error }
+            } catch (e: ArithmeticException) {
+                // Arithmetic exceptions should not occur here
+                arithmeticExceptions++
+            }
+        }
+
+        assertEquals(0, arithmeticExceptions)
+    }
+
+    @Test
     fun testSubtractSmall() {
         var arithmeticExceptions = 0
         for(i in 0..SIZE) {
@@ -1172,6 +1191,25 @@ class BigIntegerTest {
     }
 
     @Test
+    fun testSubtractLarge() {
+        var arithmeticExceptions = 0
+        for(i in 0..SIZE) {
+            try {
+                val b1 = fetchNumber(ORDER_KARATSUBA)
+                val b2 = fetchNumber(ORDER_KARATSUBA)
+                val sub = b1.subtract(b2)
+                val error = abs(b1.toDouble() + b2.toDouble() - sub.toDouble()) > 0.1
+                assertFalse { error }
+            } catch (e: ArithmeticException) {
+                // Arithmetic exceptions should not occur here
+                arithmeticExceptions++
+            }
+        }
+
+        assertEquals(0, arithmeticExceptions)
+    }
+
+    @Test
     fun testMultiplySmall() {
         var arithmeticExceptions = 0
         for(i in 0..SIZE) {
@@ -1179,7 +1217,8 @@ class BigIntegerTest {
                 val b1 = fetchNumber(ORDER_SMALL)
                 val b2 = fetchNumber(ORDER_SMALL)
                 val prod = b1.multiply(b2)
-                assertEquals(b1.toDouble() * b2.toDouble(), prod.toDouble())
+                val error = abs(b1.toDouble() * b2.toDouble() - prod.toDouble()) > 0.1
+                assertFalse { error }
             } catch (e: ArithmeticException) {
                 // Result is too large to be stored in a single long
                 arithmeticExceptions++
@@ -1201,6 +1240,19 @@ class BigIntegerTest {
                 assertEquals(b1.toLongExact() / b2.toLongExact(), div!!.toLongExact())
             } catch (e: ArithmeticException) {
                 // Divide by zero
+            }
+        }
+    }
+
+    @Test
+    fun testToString() {
+        for(i in 0..SIZE) {
+            val b = fetchNumber(ORDER_KARATSUBA)
+            try {
+                b.toString()
+            } catch (e: Exception) {
+                b.toString()
+                assertFailsWith(e::class) {}
             }
         }
     }

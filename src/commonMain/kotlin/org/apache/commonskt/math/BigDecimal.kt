@@ -3828,8 +3828,8 @@ class BigDecimal : Number, Comparable<BigDecimal> {
                 if (curLen <= n) {
                     var newLen = curLen shl 1
                     while (newLen <= n) newLen = newLen shl 1
-                    pows = pows.copyOf(newLen) { i ->
-                        pows[i - 1].multiply(BigInteger.TEN)
+                    pows = pows.copyOf(newLen) { i, arr ->
+                        arr[i - 1].multiply(BigInteger.TEN)
                     }
                     // Based on the following facts:
                     // 1. pows is a private local varible;

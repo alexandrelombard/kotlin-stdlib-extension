@@ -207,9 +207,8 @@ class BigInteger : Number, Comparable<BigInteger> {
                     lsb -= 1
                 } else {
                     // Search for lowest order nonzero int
-                    var i: Int
+                    var i = 0
                     var b: Int
-                    i = 0
                     while (getInt(i).also { b = it } == 0) {
                         i++
                     }
@@ -2198,11 +2197,10 @@ class BigInteger : Number, Comparable<BigInteger> {
                 return cacheLine[exponent]
             }
             val oldLength = cacheLine.size
-            cacheLine = cacheLine.copyOf(exponent + 1) {
-                cacheLine[it - 1].pow(2)
+            cacheLine = cacheLine.copyOf(exponent + 1) { i, arr ->
+                arr[i - 1].pow(2)
             }
-            var pc: Array<Array<BigInteger>> =
-                powerCache // volatile read again
+            var pc: Array<Array<BigInteger>> = powerCache // volatile read again
             if (exponent >= pc[radix].size) {
                 pc = pc.copyOf()
                 pc[radix] = cacheLine
@@ -2451,7 +2449,9 @@ class BigInteger : Number, Comparable<BigInteger> {
              * with just the very first value.  Additional values will be created
              * on demand.
              */
-            powerCache = Array(Character.MAX_RADIX + 1) { arrayOf(valueOf(it.toLong())) }
+            powerCache = Array(Character.MAX_RADIX + 1) {
+                arrayOf(valueOf(it.toLong()))
+            }
             logCache = DoubleArray(Character.MAX_RADIX + 1)
             for (i in Character.MIN_RADIX..Character.MAX_RADIX) {
                 logCache[i] = ln(i.toDouble())
