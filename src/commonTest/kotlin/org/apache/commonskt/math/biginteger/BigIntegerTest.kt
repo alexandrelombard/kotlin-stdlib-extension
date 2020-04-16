@@ -1139,6 +1139,7 @@ class BigIntegerTest {
 
     @Test
     fun testAddSmall() {
+        var arithmeticExceptions = 0
         for(i in 0..SIZE) {
             try {
                 val b1 = fetchNumber(ORDER_SMALL)
@@ -1147,8 +1148,44 @@ class BigIntegerTest {
                 assertEquals(b1.toLongExact() + b2.toLongExact(), add.toLongExact())
             } catch (e: ArithmeticException) {
                 // Result is too large to be stored in a single long
+                arithmeticExceptions++
             }
         }
+        println("ArithmeticExceptions: $arithmeticExceptions (${arithmeticExceptions/SIZE.toDouble()} %)")
+    }
+
+    @Test
+    fun testSubtractSmall() {
+        var arithmeticExceptions = 0
+        for(i in 0..SIZE) {
+            try {
+                val b1 = fetchNumber(ORDER_SMALL)
+                val b2 = fetchNumber(ORDER_SMALL)
+                val sub = b1.subtract(b2)
+                assertEquals(b1.toLongExact() - b2.toLongExact(), sub.toLongExact())
+            } catch (e: ArithmeticException) {
+                // Result is too large to be stored in a single long
+                arithmeticExceptions++
+            }
+        }
+        println("ArithmeticExceptions: $arithmeticExceptions (${arithmeticExceptions/SIZE.toDouble()} %)")
+    }
+
+    @Test
+    fun testMultiplySmall() {
+        var arithmeticExceptions = 0
+        for(i in 0..SIZE) {
+            try {
+                val b1 = fetchNumber(ORDER_SMALL)
+                val b2 = fetchNumber(ORDER_SMALL)
+                val prod = b1.multiply(b2)
+                assertEquals(b1.toDouble() * b2.toDouble(), prod.toDouble())
+            } catch (e: ArithmeticException) {
+                // Result is too large to be stored in a single long
+                arithmeticExceptions++
+            }
+        }
+        println("ArithmeticExceptions: $arithmeticExceptions (${arithmeticExceptions/SIZE.toDouble()} %)")
     }
 
     @Test
@@ -1181,7 +1218,6 @@ class BigIntegerTest {
         val numType: Int = random.nextInt(7)
         var result: BigInteger?
         if (order < 2) order = 2
-        eprintln(numType.toString())
         when (numType) {
             0 -> result = BigInteger.ZERO
             1 -> result = BigInteger.ONE

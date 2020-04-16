@@ -126,8 +126,8 @@ import kotlin.random.Random
  * @since JDK1.1
  */
 @ExperimentalUnsignedTypes
-@PublicApi
 @ExperimentalStdlibApi
+@PublicApi
 class BigInteger : Number, Comparable<BigInteger> {
     /**
      * The signum of this BigInteger: -1 for negative, 0 for zero, or
@@ -2220,10 +2220,9 @@ class BigInteger : Number, Comparable<BigInteger> {
          */
         private fun stripLeadingZeroInts(`val`: IntArray): IntArray {
             val vlen = `val`.size
-            var keep: Int
 
             // Find first nonzero byte
-            keep = 0
+            var keep = 0
             while (keep < vlen && `val`[keep] == 0) {
                 keep++
             }
@@ -2236,10 +2235,9 @@ class BigInteger : Number, Comparable<BigInteger> {
          */
         private fun trustedStripLeadingZeroInts(`val`: IntArray): IntArray {
             val vlen = `val`.size
-            var keep: Int
 
             // Find first nonzero byte
-            keep = 0
+            var keep = 0
             while (keep < vlen && `val`[keep] == 0) {
                 keep++
             }
@@ -2251,28 +2249,28 @@ class BigInteger : Number, Comparable<BigInteger> {
          */
         private fun stripLeadingZeroBytes(a: ByteArray): IntArray {
             val byteLength = a.size
-            var keep: Int
 
             // Find first nonzero byte
-            keep = 0
+            var keep = 0
             while (keep < byteLength && a[keep] == 0.toByte()) {
                 keep++
             }
 
             // Allocate new array and copy relevant part of input array
-            val intLength = byteLength - keep + 3 ushr 2
+            val intLength = ((byteLength - keep) + 3) ushr 2
             val result = IntArray(intLength)
             var b = byteLength - 1
             for (i in intLength - 1 downTo 0) {
-                result[i] = (a[b--] and 0xff.toByte()).toInt()
+                result[i] = a[b--].toInt() and 0xff
                 val bytesRemaining = b - keep + 1
-                val bytesToTransfer: Int = min(3, bytesRemaining)
+                val bytesToTransfer = min(3, bytesRemaining)
                 var j = 8
-                while (j <= bytesToTransfer shl 3) {
-                    result[i] = result[i] or (a[b--] and 0xff.toByte() shl j).toInt()
+                while (j <= (bytesToTransfer shl 3)) {
+                    result[i] = result[i] or ((a[b--].toInt() and 0xff) shl j)
                     j += 8
                 }
             }
+            val error = result[0] == 0
             return result
         }
 
@@ -2281,41 +2279,40 @@ class BigInteger : Number, Comparable<BigInteger> {
          * returns the minimal (no leading zero bytes) unsigned whose value is -a.
          */
         private fun makePositive(a: ByteArray): IntArray {
-            var keep: Int
             var k: Int
             val byteLength = a.size
 
             // Find first non-sign (0xff) byte of input
-            keep = 0
+            var keep: Int = 0
             while (keep < byteLength && a[keep] == (-1).toByte()) {
                 keep++
             }
 
-
             /* Allocate output array.  If all non-sign bytes are 0x00, we must
-         * allocate space for one extra output byte. */k = keep
+             * allocate space for one extra output byte. */
+            k = keep
             while (k < byteLength && a[k] == 0.toByte()) {
                 k++
             }
             val extraByte = if (k == byteLength) 1 else 0
-            val intLength = byteLength - keep + extraByte + 3 ushr 2
+            val intLength = ((byteLength - keep + extraByte) + 3) ushr 2
             val result = IntArray(intLength)
 
             /* Copy one's complement of input into output, leaving extra
-         * byte (if it exists) == 0x00 */
+             * byte (if it exists) == 0x00 */
             var b = byteLength - 1
             for (i in intLength - 1 downTo 0) {
-                result[i] = (a[b--] and 0xff.toByte()).toInt()
+                result[i] = (a[b--].toInt() and 0xff)
                 var numBytesToTransfer: Int = min(3, b - keep + 1)
                 if (numBytesToTransfer < 0) numBytesToTransfer = 0
                 var j = 8
                 while (j <= 8 * numBytesToTransfer) {
-                    result[i] = result[i] or (a[b--] and 0xff.toByte() shl j).toInt()
+                    result[i] = result[i] or ((a[b--].toInt() and 0xff) shl j)
                     j += 8
                 }
 
                 // Mask indicates which bits must be complemented
-                val mask = -1 ushr 8 * (3 - numBytesToTransfer)
+                val mask = -1 ushr (8 * (3 - numBytesToTransfer))
                 result[i] = result[i].inv() and mask
             }
 
@@ -2332,17 +2329,17 @@ class BigInteger : Number, Comparable<BigInteger> {
          * returns the minimal (no leading zero ints) unsigned whose value is -a.
          */
         private fun makePositive(a: IntArray): IntArray {
-            var keep: Int
             var j: Int
 
             // Find first non-sign (0xffffffff) int of input
-            keep = 0
+            var keep: Int = 0
             while (keep < a.size && a[keep] == -1) {
                 keep++
             }
 
             /* Allocate output array.  If all non-sign ints are 0x00, we must
-         * allocate space for one extra output int. */j = keep
+             * allocate space for one extra output int. */
+            j = keep
             while (j < a.size && a[j] == 0) {
                 j++
             }
@@ -2350,7 +2347,9 @@ class BigInteger : Number, Comparable<BigInteger> {
             val result = IntArray(a.size - keep + extraInt)
 
             /* Copy one's complement of input into output, leaving extra
-         * int (if it exists) == 0x00 */for (i in keep until a.size) result[i - keep + extraInt] = a[i].inv()
+             * int (if it exists) == 0x00 */
+            for (i in keep until a.size)
+                result[i - keep + extraInt] = a[i].inv()
 
             // Add one to one's complement to generate two's complement
             var i = result.size - 1

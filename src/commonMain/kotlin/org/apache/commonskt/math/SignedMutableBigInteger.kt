@@ -43,6 +43,7 @@ package org.apache.commonskt.math
  * @author  Michael McCloskey
  * @since   1.3
  */
+@ExperimentalUnsignedTypes
 @ExperimentalStdlibApi
 internal class SignedMutableBigInteger : MutableBigInteger {
     /**
