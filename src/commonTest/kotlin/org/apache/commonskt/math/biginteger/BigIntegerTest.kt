@@ -1163,7 +1163,7 @@ class BigIntegerTest {
                 val add = b1.add(b2)
                 val error = abs(b1.toDouble() + b2.toDouble() - add.toDouble()) > 0.1
                 b1.add(b2)
-                assertFalse { error }
+                assertFalse(error, "${b1.toDouble() + b2.toDouble()} != ${add.toDouble()}")
             } catch (e: ArithmeticException) {
                 // Arithmetic exceptions should not occur here
                 arithmeticExceptions++
@@ -1199,7 +1199,7 @@ class BigIntegerTest {
                 val b2 = fetchNumber(ORDER_KARATSUBA)
                 val sub = b1.subtract(b2)
                 val error = abs(b1.toDouble() + b2.toDouble() - sub.toDouble()) > 0.1
-                assertFalse { error }
+                assertFalse(error,  "${b1.toDouble() - b2.toDouble()} != ${sub.toDouble()}")
             } catch (e: ArithmeticException) {
                 // Arithmetic exceptions should not occur here
                 arithmeticExceptions++
@@ -1217,8 +1217,9 @@ class BigIntegerTest {
                 val b1 = fetchNumber(ORDER_SMALL)
                 val b2 = fetchNumber(ORDER_SMALL)
                 val prod = b1.multiply(b2)
-                val error = abs(b1.toDouble() * b2.toDouble() - prod.toDouble()) > 0.1
-                assertFalse { error }
+                val error = abs(b1.toDouble() * b2.toDouble() - prod.toDouble()) > 1.0
+                println("${abs(b1.toDouble() * b2.toDouble() - prod.toDouble())}")
+                assertFalse(error,  "${b1.toDouble() * b2.toDouble()} != ${prod.toDouble()}")
             } catch (e: ArithmeticException) {
                 // Result is too large to be stored in a single long
                 arithmeticExceptions++
@@ -1249,7 +1250,8 @@ class BigIntegerTest {
         for(i in 0..SIZE) {
             val b = fetchNumber(ORDER_KARATSUBA)
             try {
-                b.toString()
+                val str = b.toString()
+                assertFalse(str.startsWith("--"))
             } catch (e: Exception) {
                 b.toString()
                 assertFailsWith(e::class) {}

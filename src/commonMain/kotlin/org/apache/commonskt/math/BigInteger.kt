@@ -4293,7 +4293,8 @@ class BigInteger : Number, Comparable<BigInteger> {
      */
     override fun toLong(): Long {
         var result: Long = 0
-        for (i in 1 downTo 0) result = (result shl 32) + (getInt(i).toLong() and LONG_MASK)
+        for (i in 1 downTo 0)
+            result = (result shl 32) + (getInt(i).toLong() and LONG_MASK)
         return result
     }
 
@@ -4393,7 +4394,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         if (signum == 0) {
             return 0.0
         }
-        val exponent: Int = (mag.size - 1 shl 5) + bitLengthForInt(mag[0]) - 1
+        val exponent: Int = ((mag.size - 1) shl 5) + bitLengthForInt(mag[0]) - 1
 
         // exponent == floor(log2(abs(this))Double)
         if (exponent < Long.SIZE_BITS - 1) {
@@ -4491,7 +4492,9 @@ class BigInteger : Number, Comparable<BigInteger> {
         if (n < 0) return 0
         if (n >= mag.size) return signInt()
         val magInt = mag[mag.size - n - 1]
-        return if (signum >= 0) magInt else if (n <= firstNonzeroIntNum()) -magInt else magInt.inv()
+        return if (signum >= 0) magInt
+            else if (n <= firstNonzeroIntNum()) -magInt
+            else magInt.inv()
     }
 
     /**
