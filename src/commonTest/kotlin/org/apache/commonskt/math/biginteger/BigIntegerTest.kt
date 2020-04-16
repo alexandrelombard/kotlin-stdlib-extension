@@ -1137,6 +1137,15 @@ class BigIntegerTest {
     }
 
     @Test
+    fun testNegate() {
+        for(i in 0..SIZE) {
+            val b = fetchNumber(ORDER_KARATSUBA)
+            val neg = b.negate()
+            assertTrue(b.signum == 0 || b.signum != neg.signum)
+        }
+    }
+
+    @Test
     fun testAddSmall() {
         var arithmeticExceptions = 0
         for(i in 0..SIZE) {
@@ -1251,7 +1260,9 @@ class BigIntegerTest {
             val b = fetchNumber(ORDER_KARATSUBA)
             try {
                 val str = b.toString()
-                assertFalse(str.startsWith("--"))
+                val error = str.startsWith("--")
+                b.toString()
+                assertFalse(error, "$str is not a valid string representation")
             } catch (e: Exception) {
                 b.toString()
                 assertFailsWith(e::class) {}

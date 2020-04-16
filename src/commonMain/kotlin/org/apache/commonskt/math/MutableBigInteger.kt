@@ -153,7 +153,8 @@ internal open class MutableBigInteger {
      * Convert this MutableBigInteger to a BigInteger object.
      */
     fun toBigInteger(sign: Int): BigInteger {
-        return if (intLen == 0 || sign == 0) BigInteger.ZERO else BigInteger(magnitudeArray, sign)
+        return if (intLen == 0 || sign == 0) BigInteger.ZERO
+            else BigInteger(magnitudeArray, sign)
     }
 
     /**
