@@ -1196,8 +1196,13 @@ class BigInteger : Number, Comparable<BigInteger> {
          */
         fun valueOf(`val`: Long): BigInteger {
             // If -MAX_CONSTANT < val < MAX_CONSTANT, return stashed constant
-            if (`val` == 0L) return ZERO
-            if (`val` in 1..MAX_CONSTANT) return posConst[`val`.toInt()] else if (`val` < 0 && `val` >= -MAX_CONSTANT) return negConst[(-`val`).toInt()]!!
+            if (`val` == 0L)
+                return ZERO
+            else if (`val` in 1..MAX_CONSTANT)
+                return posConst[`val`.toInt()]
+            else if (`val` < 0 && `val` >= -MAX_CONSTANT)
+                return negConst[(-`val`).toInt()]!!
+
             return BigInteger(`val`)
         }
 
@@ -1214,14 +1219,15 @@ class BigInteger : Number, Comparable<BigInteger> {
          * Initialize static constant array when class is loaded.
          */
         private const val MAX_CONSTANT = 16
-        private val magnitudeConst = IntArray(1)
         private val posConst: Array<BigInteger> = Array(MAX_CONSTANT + 1) {
-            magnitudeConst[0] = it
-            BigInteger(magnitudeConst, 1)
+            val magnitude = IntArray(1)
+            magnitude[0] = it
+            BigInteger(magnitude, 1)
         }
         private val negConst: Array<BigInteger> = Array(MAX_CONSTANT + 1) {
-            magnitudeConst[0] = it
-            BigInteger(magnitudeConst, -1)
+            val magnitude = IntArray(1)
+            magnitude[0] = it
+            BigInteger(magnitude, -1)
         }
 
         /**
@@ -2434,14 +2440,12 @@ class BigInteger : Number, Comparable<BigInteger> {
 
         init {
             assert(
-                KARATSUBA_THRESHOLD in 1 until TOOM_COOK_THRESHOLD && TOOM_COOK_THRESHOLD < Int.MAX_VALUE && 0 < KARATSUBA_SQUARE_THRESHOLD && KARATSUBA_SQUARE_THRESHOLD < TOOM_COOK_SQUARE_THRESHOLD && TOOM_COOK_SQUARE_THRESHOLD < Int.MAX_VALUE
+                KARATSUBA_THRESHOLD in 1 until TOOM_COOK_THRESHOLD &&
+                        TOOM_COOK_THRESHOLD < Int.MAX_VALUE &&
+                        0 < KARATSUBA_SQUARE_THRESHOLD &&
+                        KARATSUBA_SQUARE_THRESHOLD < TOOM_COOK_SQUARE_THRESHOLD &&
+                        TOOM_COOK_SQUARE_THRESHOLD < Int.MAX_VALUE
             ) { "Algorithm thresholds are inconsistent" }
-            for (i in 1..MAX_CONSTANT) {
-                val magnitude = IntArray(1)
-                magnitude[0] = i
-                posConst[i] = BigInteger(magnitude, 1)
-                negConst[i] = BigInteger(magnitude, -1)
-            }
 
             /*
              * Initialize the cache of radix^(2^x) values used for base conversion
