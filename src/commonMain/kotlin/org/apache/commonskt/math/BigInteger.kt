@@ -2973,14 +2973,13 @@ class BigInteger : Number, Comparable<BigInteger> {
 
     /** Long division  */
     private fun divideAndRemainderKnuth(`val`: BigInteger): Array<BigInteger> {
-        val result: Array<BigInteger> = arrayOf()
         val q = MutableBigInteger()
         val a = MutableBigInteger(mag)
         val b = MutableBigInteger(`val`.mag)
         val r: MutableBigInteger = a.divideKnuth(b, q)!!
-        result[0] = q.toBigInteger(if (signum == `val`.signum) 1 else -1)
-        result[1] = r.toBigInteger(signum)
-        return result
+        val r0 = q.toBigInteger(if (signum == `val`.signum) 1 else -1)
+        val r1 = r.toBigInteger(signum)
+        return arrayOf(r0, r1)
     }
 
     /**
