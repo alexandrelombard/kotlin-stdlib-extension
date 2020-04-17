@@ -590,7 +590,7 @@ internal open class MutableBigInteger {
             val product = (a[j].toLong() and LONG_MASK) * xLong + carry
             val difference = q[offset] - product
             q[offset--] = difference.toInt()
-            carry = (product ushr 32) + if (difference and LONG_MASK > product.toInt().inv().toLong() and LONG_MASK) 1 else 0
+            carry = (product ushr 32) + if ((difference and LONG_MASK) > product.toInt().inv().toLong() and LONG_MASK) 1 else 0
         }
         return carry.toInt()
     }
@@ -607,7 +607,7 @@ internal open class MutableBigInteger {
         for (j in len - 1 downTo 0) {
             val product = (a[j].toLong() and LONG_MASK) * xLong + carry
             val difference = q[offset--] - product
-            carry = (product ushr 32) + if (difference and LONG_MASK > product.toInt().inv().toLong() and LONG_MASK) 1 else 0
+            carry = (product ushr 32) + if ((difference and LONG_MASK) > product.toInt().inv().toLong() and LONG_MASK) 1 else 0
         }
         return carry.toInt()
     }
@@ -645,7 +645,7 @@ internal open class MutableBigInteger {
         while (i < m) {
             val b = c
             c = `val`[i + 1]
-            `val`[i] = b shl n or (c ushr n2)
+            `val`[i] = (b shl n) or (c ushr n2)
             i++
         }
         `val`[offset + intLen - 1] = `val`[offset + intLen - 1] shl n
@@ -698,7 +698,7 @@ internal open class MutableBigInteger {
             x--
             y--
             sum = (value[x + offset].toLong() and LONG_MASK) +
-                    (addend.value.get(y + addend.offset).toLong() and LONG_MASK) + carry
+                    (addend.value[y + addend.offset].toLong() and LONG_MASK) + carry
             result[rstart--] = sum.toInt()
             carry = sum ushr 32
         }
@@ -713,7 +713,7 @@ internal open class MutableBigInteger {
         }
         while (y > 0) {
             y--
-            sum = (addend.value.get(y + addend.offset).toLong() and LONG_MASK) + carry
+            sum = (addend.value[y + addend.offset].toLong() and LONG_MASK) + carry
             result[rstart--] = sum.toInt()
             carry = sum ushr 32
         }
@@ -756,7 +756,7 @@ internal open class MutableBigInteger {
         while (x > 0 && y > 0) {
             x--
             y--
-            val bval = if (y + addend.offset < addend.value.size) addend.value.get(y + addend.offset) else 0
+            val bval = if (y + addend.offset < addend.value.size) addend.value[y + addend.offset] else 0
             sum = (value[x + offset].toLong() and LONG_MASK) +
                     (bval.toLong() and LONG_MASK) + carry
             result[rstart--] = sum.toInt()
@@ -775,7 +775,7 @@ internal open class MutableBigInteger {
         }
         while (y > 0) {
             y--
-            val bval = if (y + addend.offset < addend.value.size) addend.value.get(y + addend.offset) else 0
+            val bval = if (y + addend.offset < addend.value.size) addend.value[y + addend.offset] else 0
             sum = (bval.toLong() and LONG_MASK) + carry
             result[rstart--] = sum.toInt()
             carry = sum ushr 32
@@ -871,14 +871,14 @@ internal open class MutableBigInteger {
         while (y > 0) {
             x--
             y--
-            diff = (a.value.get(x + a.offset).toLong() and LONG_MASK) -
-                    (b.value.get(y + b.offset).toLong() and LONG_MASK) - (-(diff shr 32)).toInt()
+            diff = (a.value[x + a.offset].toLong() and LONG_MASK) -
+                    (b.value[y + b.offset].toLong() and LONG_MASK) - (-(diff shr 32)).toInt()
             result[rstart--] = diff.toInt()
         }
         // Subtract remainder of longer number
         while (x > 0) {
             x--
-            diff = (a.value.get(x + a.offset).toLong() and LONG_MASK) - (-(diff shr 32)).toInt()
+            diff = (a.value[x + a.offset].toLong() and LONG_MASK) - (-(diff shr 32)).toInt()
             result[rstart--] = diff.toInt()
         }
         value = result
@@ -911,14 +911,14 @@ internal open class MutableBigInteger {
         while (y > 0) {
             x--
             y--
-            diff = (a.value.get(a.offset + x).toLong() and LONG_MASK) -
-                    (b.value.get(b.offset + y).toLong() and LONG_MASK) - (-(diff shr 32)).toInt()
+            diff = (a.value[a.offset + x].toLong() and LONG_MASK) -
+                    (b.value[b.offset + y].toLong() and LONG_MASK) - (-(diff shr 32)).toInt()
             a.value[a.offset + x] = diff.toInt()
         }
         // Subtract remainder of longer number
         while (x > 0) {
             x--
-            diff = (a.value.get(a.offset + x).toLong() and LONG_MASK) - (-(diff shr 32)).toInt()
+            diff = (a.value[a.offset + x].toLong() and LONG_MASK) - (-(diff shr 32)).toInt()
             a.value[a.offset + x] = diff.toInt()
         }
         a.normalize()
@@ -944,7 +944,7 @@ internal open class MutableBigInteger {
         var j = yLen - 1
         var k = yLen + xLen - 1
         while (j >= 0) {
-            val product: Long = (y.value.get(j + y.offset).toLong() and LONG_MASK) *
+            val product: Long = (y.value[j + y.offset].toLong() and LONG_MASK) *
                     (value[xLen - 1 + offset].toLong() and LONG_MASK) + carry
             z.value[k] = product.toInt()
             carry = product ushr 32
@@ -959,9 +959,9 @@ internal open class MutableBigInteger {
             var j = yLen - 1
             var k = yLen + i
             while (j >= 0) {
-                val product: Long = (y.value.get(j + y.offset).toLong() and LONG_MASK) *
+                val product: Long = (y.value[j + y.offset].toLong() and LONG_MASK) *
                         (value[i + offset].toLong() and LONG_MASK) +
-                        (z.value.get(k).toLong() and LONG_MASK) + carry
+                        (z.value[k].toLong() and LONG_MASK) + carry
                 z.value[k] = product.toInt()
                 carry = product ushr 32
                 j--
@@ -1127,7 +1127,7 @@ internal open class MutableBigInteger {
         quotient.clear()
         // Special case one word divisor
         if (b.intLen == 1) {
-            val r = divideOneWord(b.value.get(b.offset), quotient)
+            val r = divideOneWord(b.value[b.offset], quotient)
             return if (needRemainder) {
                 if (r == 0) MutableBigInteger() else MutableBigInteger(r)
             } else {
@@ -1482,7 +1482,7 @@ internal open class MutableBigInteger {
             }
             if (qhat == 0) continue
             if (!skipCorrection) { // Correct qhat
-                val nl: Long = rem.value.get(j + 2 + rem.offset).toLong() and LONG_MASK
+                val nl: Long = rem.value[j + 2 + rem.offset].toLong() and LONG_MASK
                 var rs = (((qrem.toLong() and LONG_MASK) shl 32) or nl)
                 var estProduct =
                     ((dl.toLong() and LONG_MASK) * (qhat.toLong() and LONG_MASK))
@@ -1524,7 +1524,7 @@ internal open class MutableBigInteger {
             qrem = nh + nm
             skipCorrection = qrem + 0x80000000 < nh2
         } else {
-            val nChunk = nh.toLong() shl 32 or (nm.toLong() and LONG_MASK)
+            val nChunk = (nh.toLong() shl 32) or (nm.toLong() and LONG_MASK)
             if (nChunk >= 0) {
                 qhat = (nChunk / dhLong).toInt()
                 qrem = (nChunk - qhat * dhLong).toInt()
@@ -1536,7 +1536,7 @@ internal open class MutableBigInteger {
         }
         if (qhat != 0) {
             if (!skipCorrection) { // Correct qhat
-                val nl: Long = rem.value.get(limit + 1 + rem.offset).toLong() and LONG_MASK
+                val nl: Long = rem.value[limit + 1 + rem.offset].toLong() and LONG_MASK
                 var rs = (((qrem.toLong() and LONG_MASK) shl 32) or nl)
                 var estProduct =
                     ((dl.toLong() and LONG_MASK) * (qhat.toLong() and LONG_MASK))
@@ -1650,8 +1650,8 @@ internal open class MutableBigInteger {
             }
             if (qhat == 0) continue
             if (!skipCorrection) { // Correct qhat
-                val nl: Long = rem.value.get(j + 2 + rem.offset).toLong() and LONG_MASK
-                var rs = (qrem.toLong() and LONG_MASK shl 32 or nl.toInt().toLong())
+                val nl: Long = rem.value[j + 2 + rem.offset].toLong() and LONG_MASK
+                var rs = (qrem.toLong() and LONG_MASK shl 32 or nl)
                 var estProduct =
                     ((dl.toLong() and LONG_MASK) * (qhat.toLong() and LONG_MASK))
                 if (unsignedLongCompare(estProduct, rs)) {
@@ -1659,7 +1659,7 @@ internal open class MutableBigInteger {
                     qrem = ((qrem.toLong() and LONG_MASK) + dhLong).toInt()
                     if (qrem.toLong() and LONG_MASK >= dhLong) {
                         estProduct -= dl.toLong() and LONG_MASK
-                        rs = (qrem.toLong() and LONG_MASK shl 32 or nl.toInt().toLong())
+                        rs = (qrem.toLong() and LONG_MASK shl 32 or nl)
                         if (unsignedLongCompare(estProduct, rs)) qhat--
                     }
                 }
@@ -1871,8 +1871,8 @@ internal open class MutableBigInteger {
 
             // Special case one word numbers
             if (u.intLen < 2 && v.intLen < 2) {
-                var x: Int = u.value.get(u.offset)
-                val y: Int = v.value.get(v.offset)
+                var x: Int = u.value[u.offset]
+                val y: Int = v.value[v.offset]
                 x = binaryGcd(x, y)
                 r.value[0] = x
                 r.intLen = 1
@@ -1994,8 +1994,8 @@ internal open class MutableBigInteger {
             }
 
             // If f == g (mod 4)
-            if (f.value.get(f.offset + f.intLen - 1) xor
-                g.value.get(g.offset + g.intLen - 1) and 3 == 0
+            if (f.value[f.offset + f.intLen - 1] xor
+                g.value[g.offset + g.intLen - 1] and 3 == 0
             ) {
                 f.subtract(g)
                 c.signedSubtract(d)
@@ -2037,7 +2037,7 @@ internal open class MutableBigInteger {
             if (r.intLen == 0) throw ArithmeticException("BigInteger not invertible.")
             swapper = r
             a = swapper
-            if (q.intLen == 1) t1.mul(q.value.get(q.offset), temp) else q.multiply(t1, temp)
+            if (q.intLen == 1) t1.mul(q.value[q.offset], temp) else q.multiply(t1, temp)
             swapper = q
             q = temp
             temp = swapper
@@ -2047,7 +2047,7 @@ internal open class MutableBigInteger {
             if (r.intLen == 0) throw ArithmeticException("BigInteger not invertible.")
             swapper = b
             b = r
-            if (q.intLen == 1) t0.mul(q.value.get(q.offset), temp) else q.multiply(t0, temp)
+            if (q.intLen == 1) t0.mul(q.value[q.offset], temp) else q.multiply(t0, temp)
             swapper = q
             q = temp
             temp = swapper
@@ -2214,13 +2214,13 @@ internal open class MutableBigInteger {
         ): MutableBigInteger {
             val temp: MutableBigInteger = MutableBigInteger()
             // Set r to the multiplicative inverse of p mod 2^32
-            val r: Int = -inverseMod32(p.value.get(p.offset + p.intLen - 1))
+            val r: Int = -inverseMod32(p.value[p.offset + p.intLen - 1])
             var i = 0
             val numWords = k shr 5
             while (i < numWords) {
 
                 // V = R * c (mod 2^j)
-                val v: Int = r * c.value.get(c.offset + c.intLen - 1)
+                val v: Int = r * c.value[c.offset + c.intLen - 1]
                 // c = c + (v * p)
                 p.mul(v, temp)
                 c.add(temp)
@@ -2231,7 +2231,7 @@ internal open class MutableBigInteger {
             val numBits = k and 0x1f
             if (numBits != 0) {
                 // V = R * c (mod 2^j)
-                var v: Int = r * c.value.get(c.offset + c.intLen - 1)
+                var v: Int = r * c.value[c.offset + c.intLen - 1]
                 v = v and (1 shl numBits) - 1
                 // c = c + (v * p)
                 p.mul(v, temp)

@@ -2199,9 +2199,8 @@ class BigInteger : Number, Comparable<BigInteger> {
                 sb.append(s)
                 return
             }
-            val b: Int
             val n: Int
-            b = u.bitLength()
+            val b: Int = u.bitLength()
 
             // Calculate a value for n in the equation radix^(2^n) = u
             // and subtract 1 from that value.  This is used to find the
@@ -2961,7 +2960,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @return `this / val`
      * @throws ArithmeticException if `val` is zero.
      */
-    fun divide(`val`: BigInteger): BigInteger? {
+    fun divide(`val`: BigInteger): BigInteger {
         return if (`val`.mag.size < BURNIKEL_ZIEGLER_THRESHOLD ||
             mag.size - `val`.mag.size < BURNIKEL_ZIEGLER_OFFSET
         ) {
@@ -3050,7 +3049,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @param  val the divisor
      * @return `this / val`
      */
-    private fun divideBurnikelZiegler(`val`: BigInteger): BigInteger? {
+    private fun divideBurnikelZiegler(`val`: BigInteger): BigInteger {
         return divideAndRemainderBurnikelZiegler(`val`)[0]
     }
 
