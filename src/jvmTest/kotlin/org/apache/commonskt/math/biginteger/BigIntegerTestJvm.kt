@@ -8,6 +8,7 @@ import kotlin.experimental.or
 import kotlin.math.min
 import kotlin.random.Random
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
  * Test the commons BigInteger class by comparing its output to the JVM BigInteger implementation
@@ -48,6 +49,53 @@ class BigIntegerTestJvm {
             val b2jvm = java.math.BigInteger(b2c.toString())
 
             assertEquals(b1jvm.multiply(b2jvm).toString(), b1c.multiply(b2c).toString())
+        }
+    }
+
+    @Test
+    fun testPow() {
+        for(i in 0..SIZE) {
+            try {
+                val bc = fetchNumber(ORDER_KARATSUBA)
+                val bjvm = java.math.BigInteger(bc.toString())
+                val rInt = random.nextInt()
+
+                assertEquals(bjvm.pow(rInt).toString(), bc.pow(rInt).toString())
+            } catch (e: ArithmeticException) {
+                // Exponent is negative
+            }
+        }
+    }
+
+    @Test
+    fun testDivide() {
+        for(i in 0..SIZE) {
+            try {
+                val b1c = fetchNumber(ORDER_KARATSUBA)
+                val b2c = fetchNumber(ORDER_KARATSUBA)
+                val b1jvm = java.math.BigInteger(b1c.toString())
+                val b2jvm = java.math.BigInteger(b2c.toString())
+
+                assertEquals(b1jvm.divide(b2jvm).toString(), b1c.divide(b2c).toString())
+            } catch (e: ArithmeticException) {
+                // Divisor is equal to zero
+            }
+        }
+    }
+
+    @Test
+    fun testMod() {
+        for(i in 0..SIZE) {
+            try {
+                val b1c = fetchNumber(ORDER_KARATSUBA)
+                val b2c = fetchNumber(ORDER_KARATSUBA)
+                val b1jvm = java.math.BigInteger(b1c.toString())
+                val b2jvm = java.math.BigInteger(b2c.toString())
+
+                assertEquals(b1jvm.rem(b2jvm).toString(), b1c.rem(b2c).toString())
+            } catch (e: ArithmeticException) {
+                // Divisor is equal to zero
+            }
         }
     }
 
