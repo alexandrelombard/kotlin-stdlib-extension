@@ -3166,7 +3166,7 @@ class BigInteger : Number, Comparable<BigInteger> {
                 valueOf(result * newSign)
             }
         } else {
-            if (bitLength().toLong() * exponent / IntegerConsts.SIZE > MAX_MAG_LENGTH) {
+            if (bitLength().toLong() * exponent / Int.SIZE_BITS > MAX_MAG_LENGTH) {
                 reportOverflow()
             }
 
