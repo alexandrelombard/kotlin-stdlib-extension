@@ -2483,7 +2483,11 @@ class BigInteger : Number, Comparable<BigInteger> {
              * on demand.
              */
             powerCache = Array(Character.MAX_RADIX + 1) {
-                arrayOf(valueOf(it.toLong()))
+                if(it in Character.MIN_RADIX..Character.MAX_RADIX) {
+                    arrayOf(valueOf(it.toLong()))
+                } else {
+                    arrayOf()
+                }
             }
             logCache = DoubleArray(Character.MAX_RADIX + 1)
             for (i in Character.MIN_RADIX..Character.MAX_RADIX) {
