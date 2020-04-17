@@ -1484,7 +1484,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             val yl = y.toLong()
             var rstart = rmag.size - 1
             for (i in xlen - 1 downTo 0) {
-                val product = x[i].toLong() * yl + carry
+                val product = (x[i].toLong() and LONG_MASK) * yl + carry
                 rmag[rstart--] = product.toInt()
                 carry = product ushr 32
             }
@@ -1507,7 +1507,19 @@ class BigInteger : Number, Comparable<BigInteger> {
             ylen: Int,
             z: IntArray?
         ): IntArray {
-            var z = z
+            multiplyToLenCheck(x, xlen)
+            multiplyToLenCheck(y, ylen)
+            return implMultiplyToLen(x, xlen, y, ylen, z)
+        }
+
+        private fun implMultiplyToLen(
+            x: IntArray,
+            xlen: Int,
+            y: IntArray,
+            ylen: Int,
+            z: IntArray?
+        ): IntArray {
+            var z: IntArray? = z
             val xstart = xlen - 1
             val ystart = ylen - 1
             if (z == null || z.size < xlen + ylen) z = IntArray(xlen + ylen)
@@ -1529,7 +1541,7 @@ class BigInteger : Number, Comparable<BigInteger> {
                 var k = ystart + 1 + i
                 while (j >= 0) {
                     val product = (y[j].toLong() and LONG_MASK) *
-                            x[i].toLong() +
+                            (x[i].toLong() and LONG_MASK) +
                             (z[k].toLong() and LONG_MASK) + carry
                     z[k] = product.toInt()
                     carry = product ushr 32
@@ -1539,6 +1551,15 @@ class BigInteger : Number, Comparable<BigInteger> {
                 z[i] = carry.toInt()
             }
             return z
+        }
+
+        private fun multiplyToLenCheck(array: IntArray, length: Int) {
+            if (length <= 0) {
+                return  // not an error because multiplyToLen won't execute if len <= 0
+            }
+            if (length > array.size) {
+                throw IndexOutOfBoundsException()
+            }
         }
 
         /**
@@ -2111,7 +2132,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             val nInts = n ushr 5
             val nBits = n and 0x1f
             val magLen = mag.size
-            var newMag: IntArray?
+            val newMag: IntArray
             if (nBits == 0) {
                 newMag = IntArray(magLen + nInts)
                 mag.copyInto(newMag, 0, 0, magLen)
@@ -2125,11 +2146,24 @@ class BigInteger : Number, Comparable<BigInteger> {
                 } else {
                     newMag = IntArray(magLen + nInts)
                 }
-                var j = 0
-                while (j < magLen - 1) newMag[i++] = mag[j++] shl nBits or mag[j] ushr nBits2
-                newMag[i] = mag[j] shl nBits
+                val numIter = magLen - 1
+                Objects.checkFromToIndex(0, numIter + 1, mag.size)
+                Objects.checkFromToIndex(i, numIter + i + 1, newMag.size)
+                shiftLeftImplWorker(newMag, mag, i, nBits, numIter)
+                newMag[numIter + i] = mag[numIter] shl nBits
             }
             return newMag
+        }
+
+        private fun shiftLeftImplWorker(
+            newArr: IntArray, oldArr: IntArray, newIdx: Int, shiftCount: Int, numIter: Int) {
+            var localNewIdx = newIdx
+            val shiftCountRight = 32 - shiftCount
+            var oldIdx = 0
+            while (oldIdx < numIter) {
+                newArr[localNewIdx++] =
+                    (oldArr[oldIdx++] shl shiftCount) or (oldArr[oldIdx] ushr shiftCountRight)
+            }
         }
 
         /**
@@ -2268,7 +2302,6 @@ class BigInteger : Number, Comparable<BigInteger> {
                     j += 8
                 }
             }
-            val error = result[0] == 0
             return result
         }
 

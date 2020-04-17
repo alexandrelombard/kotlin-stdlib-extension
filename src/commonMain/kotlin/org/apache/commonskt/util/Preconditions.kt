@@ -55,14 +55,14 @@ internal object Preconditions {
     private fun outOfBoundsCheckIndex(
         oobe: ((String, List<Int>)->RuntimeException?)?,
         index: Int, length: Int
-    ): RuntimeException? {
+    ): RuntimeException {
         return outOfBounds(oobe, "checkIndex", index, length)
     }
 
     private fun outOfBoundsCheckFromToIndex(
         oobe: ((String, List<Int>)->RuntimeException?)?,
         fromIndex: Int, toIndex: Int, length: Int
-    ): RuntimeException? {
+    ): RuntimeException {
         return outOfBounds(oobe, "checkFromToIndex", fromIndex, toIndex, length)
     }
 
@@ -223,7 +223,7 @@ internal object Preconditions {
         index: Int, length: Int,
         oobef: (String, List<Int>)-> X?
     ): Int {
-        if (index < 0 || index >= length) throw outOfBoundsCheckIndex(oobef, index, length)!!
+        if (index < 0 || index >= length) throw outOfBoundsCheckIndex(oobef, index, length)
         return index
     }
 
@@ -270,14 +270,10 @@ internal object Preconditions {
     </X> */
     fun <X : RuntimeException?> checkFromToIndex(
         fromIndex: Int, toIndex: Int, length: Int,
-        oobef: (String, List<Int>)-> X?
+        oobef: ((String, List<Int>)-> X?)?
     ): Int {
-        if (fromIndex < 0 || fromIndex > toIndex || toIndex > length) throw outOfBoundsCheckFromToIndex(
-            oobef,
-            fromIndex,
-            toIndex,
-            length
-        )!!
+        if (fromIndex < 0 || fromIndex > toIndex || toIndex > length)
+            throw outOfBoundsCheckFromToIndex(oobef, fromIndex, toIndex, length)
         return fromIndex
     }
 

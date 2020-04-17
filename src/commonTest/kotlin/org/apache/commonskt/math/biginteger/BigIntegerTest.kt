@@ -1101,9 +1101,9 @@ class BigIntegerTest {
 //        if (args.size > 1) order2 = (args[1].toInt() * 3.333).toInt()
 //        if (args.size > 2) order3 = (args[2].toInt() * 3.333).toInt()
 //        if (args.size > 3) order4 = (args[3].toInt() * 3.333).toInt()
-//        constructor()
-//        prime()
-//        nextProbablePrime()
+        constructor()
+        prime()
+        nextProbablePrime()
         arithmetic(order1) // small numbers
         arithmetic(order3) // Karatsuba range
         arithmetic(order4) // Toom-Cook / Burnikel-Ziegler range
@@ -1170,9 +1170,11 @@ class BigIntegerTest {
                 val b1 = fetchNumber(ORDER_KARATSUBA)
                 val b2 = fetchNumber(ORDER_KARATSUBA)
                 val add = b1.add(b2)
-                val error = abs(b1.toDouble() + b2.toDouble() - add.toDouble()) > 0.1
-                b1.add(b2)
-                assertFalse(error, "${b1.toDouble() + b2.toDouble()} != ${add.toDouble()}")
+                if(b1.toDouble().isFinite() && b2.toDouble().isFinite() && add.toDouble().isFinite()) {
+                    val error = abs(b1.toDouble() + b2.toDouble() - add.toDouble()) > 0.1
+                    b1.add(b2)
+                    assertFalse(error, "${b1.toDouble() + b2.toDouble()} != ${add.toDouble()}")
+                }
             } catch (e: ArithmeticException) {
                 // Arithmetic exceptions should not occur here
                 arithmeticExceptions++
@@ -1226,9 +1228,12 @@ class BigIntegerTest {
                 val b1 = fetchNumber(ORDER_SMALL)
                 val b2 = fetchNumber(ORDER_SMALL)
                 val prod = b1.multiply(b2)
-                val error = abs(b1.toDouble() * b2.toDouble() - prod.toDouble()) > 1.0
-                println("${abs(b1.toDouble() * b2.toDouble() - prod.toDouble())}")
-                assertFalse(error,  "${b1.toDouble() * b2.toDouble()} != ${prod.toDouble()}")
+                if(b1.toDouble().isFinite() && b2.toDouble().isFinite() && prod.toDouble().isFinite()) {
+                    val diff = abs(b1.toDouble() * b2.toDouble() - prod.toDouble())
+                    val error = diff > 0.5
+                    println("${abs(b1.toDouble() * b2.toDouble() - prod.toDouble())}")
+                    assertFalse(error, "${b1.toDouble() * b2.toDouble()} != ${prod.toDouble()} ($diff)")
+                }
             } catch (e: ArithmeticException) {
                 // Result is too large to be stored in a single long
                 arithmeticExceptions++

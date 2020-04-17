@@ -25,10 +25,36 @@
 package org.apache.commonskt.util
 
 import org.apache.commonskt.PublicApi
-import org.apache.commonskt.util.Preconditions.checkFromIndexSize
+import org.apache.commonskt.util.Preconditions.checkFromToIndex
 
 @PublicApi
 object Objects {
+    /**
+     * Checks if the sub-range from `fromIndex` (inclusive) to
+     * `toIndex` (exclusive) is within the bounds of range from `0`
+     * (inclusive) to `length` (exclusive).
+     *
+     *
+     * The sub-range is defined to be out of bounds if any of the following
+     * inequalities is true:
+     *
+     *  * `fromIndex < 0`
+     *  * `fromIndex > toIndex`
+     *  * `toIndex > length`
+     *  * `length < 0`, which is implied from the former inequalities
+     *
+     *
+     * @param fromIndex the lower-bound (inclusive) of the sub-range
+     * @param toIndex the upper-bound (exclusive) of the sub-range
+     * @param length the upper-bound (exclusive) the range
+     * @return `fromIndex` if the sub-range within bounds of the range
+     * @throws IndexOutOfBoundsException if the sub-range is out of bounds
+     * @since 9
+     */
+    fun checkFromToIndex(fromIndex: Int, toIndex: Int, length: Int): Int {
+        return checkFromToIndex<RuntimeException>(fromIndex, toIndex, length, null)
+    }
+
     /**
      * Checks if the sub-range from `fromIndex` (inclusive) to
      * `fromIndex + size` (exclusive) is within the bounds of range from
