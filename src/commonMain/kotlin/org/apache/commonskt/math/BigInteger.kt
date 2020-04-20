@@ -125,6 +125,7 @@ import kotlin.random.Random
  * @author  Timothy Buktu
  * @since JDK1.1
  */
+@Suppress("NAME_SHADOWING")
 @ExperimentalUnsignedTypes
 @ExperimentalStdlibApi
 @PublicApi
@@ -426,19 +427,6 @@ class BigInteger : Number, Comparable<BigInteger> {
      * [Character.MAX_RADIX], inclusive.
      * @see Character.digit
      */
-    /**
-     * Translates the decimal String representation of a BigInteger into a
-     * BigInteger.  The String representation consists of an optional minus
-     * sign followed by a sequence of one or more decimal digits.  The
-     * character-to-digit mapping is provided by `Character.digit`.
-     * The String may not contain any extraneous characters (whitespace, for
-     * example).
-     *
-     * @param val decimal String representation of BigInteger.
-     * @throws NumberFormatException `val` is not a valid representation
-     * of a BigInteger.
-     * @see Character.digit
-     */
     constructor(`val`: String, radix: Int = 10) {
         var cursor = 0
         val numDigits: Int
@@ -711,7 +699,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * `false` if it's definitely composite.
      */
     fun primeToCertainty(certainty: Int, random: Random?): Boolean {
-        var rounds = 0
+        var rounds: Int
         val n: Int = (min(certainty, Int.MAX_VALUE - 1) + 1) / 2
 
         // The relationship between the certainty and the number of rounds
@@ -959,7 +947,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             val ylong = y.toLong()
             val zlong = z.toLong()
             val len = x.size
-            var product: Long = 0
+            var product: Long
             var carry: Long = 0
             for (i in len - 1 downTo 0) {
                 product = ylong * x[i].toLong() + carry
@@ -1043,7 +1031,7 @@ class BigInteger : Number, Comparable<BigInteger> {
                 for (i in 0 until magLen) temp[i] = rnd.nextInt()
                 temp[0] = temp[0] and highMask or highBit // Ensure exact length
                 if (bitLength > 2) temp[magLen - 1] = temp[magLen - 1] or 1 // Make odd if bitlen > 2
-                val p: BigInteger = BigInteger(temp, 1)
+                val p = BigInteger(temp, 1)
 
                 // Do cheap "pre-test" if applicable
                 if (bitLength > 6) {
@@ -1200,7 +1188,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             else if (`val` in 1..MAX_CONSTANT)
                 return posConst[`val`.toInt()]
             else if (`val` < 0 && `val` >= -MAX_CONSTANT)
-                return negConst[(-`val`).toInt()]!!
+                return negConst[(-`val`).toInt()]
 
             return BigInteger(`val`)
         }
@@ -1280,8 +1268,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          * non-negative
          */
         private fun add(x: IntArray, `val`: Long): IntArray {
-            var y: IntArray
-            var sum: Long = 0
+            var sum: Long
             var xIndex = x.size
             val result: IntArray
             val highWord = (`val` ushr 32).toInt()
@@ -1294,7 +1281,7 @@ class BigInteger : Number, Comparable<BigInteger> {
                     result = IntArray(2)
                     sum = `val` + (x[0].toLong() and LONG_MASK)
                     result[1] = sum.toInt()
-                    result[0] = (sum ushr 32) as Int
+                    result[0] = (sum ushr 32).toInt()
                     return result
                 } else {
                     result = IntArray(xIndex)
@@ -1414,7 +1401,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             val highWord = (`val` ushr 32).toInt()
             var bigIndex = big.size
             val result = IntArray(bigIndex)
-            var difference: Long = 0
+            var difference: Long
             if (highWord == 0) {
                 difference = (big[--bigIndex].toLong() and LONG_MASK) - `val`
                 result[bigIndex] = difference.toInt()
@@ -2229,7 +2216,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             if (exponent < cacheLine.size) {
                 return cacheLine[exponent]
             }
-            val oldLength = cacheLine.size
+            cacheLine.size
             cacheLine = cacheLine.copyOf(exponent + 1) { i, arr ->
                 arr[i - 1].pow(2)
             }
@@ -2313,7 +2300,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             val byteLength = a.size
 
             // Find first non-sign (0xff) byte of input
-            var keep: Int = 0
+            var keep = 0
             while (keep < byteLength && a[keep] == (-1).toByte()) {
                 keep++
             }
@@ -2362,7 +2349,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             var j: Int
 
             // Find first non-sign (0xffffffff) int of input
-            var keep: Int = 0
+            var keep = 0
             while (keep < a.size && a[keep] == -1) {
                 keep++
             }
@@ -2463,9 +2450,6 @@ class BigInteger : Number, Comparable<BigInteger> {
             0x17179149, 0x1cb91000, 0x23744899, 0x2b73a840, 0x34e63b41,
             0x40000000, 0x4cfa3cc1, 0x5c13d840, 0x6d91b519, 0x39aa400
         )
-
-        /** use serialVersionUID from JDK 1.1. for interoperability  */
-        private const val serialVersionUID = -8287574255936472291L
 
         init {
             assert(
@@ -2833,17 +2817,12 @@ class BigInteger : Number, Comparable<BigInteger> {
         mag.copyInto(upperInts, 0, 0, upperLen)
         return BigInteger(trustedStripLeadingZeroInts(upperInts), 1)
     }
+    // Squaring
     /**
      * Returns a BigInteger whose value is `(this<sup>2</sup>)`. If
      * the invocation is recursive certain overflow checks are skipped.
      *
      * @param isRecursion whether this is a recursive invocation
-     * @return `this<sup>2</sup>`
-     */
-    // Squaring
-    /**
-     * Returns a BigInteger whose value is `(this<sup>2</sup>)`.
-     *
      * @return `this<sup>2</sup>`
      */
     private fun square(isRecursion: Boolean = false): BigInteger {
@@ -3524,7 +3503,7 @@ class BigInteger : Number, Comparable<BigInteger> {
                 elen--
             }
         }
-        var multpos = ebits
+        var multpos: Int
 
         // The first iteration, which is hoisted out of the main loop
         ebits--
@@ -3719,7 +3698,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         val nInts = n ushr 5
         val nBits = n and 0x1f
         val magLen = mag.size
-        var newMag: IntArray? = null
+        var newMag: IntArray?
 
         // Special case: entire contents shifted off the end
         if (nInts >= magLen) return if (signum >= 0) ZERO else negConst[1]
@@ -4156,7 +4135,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @param  radix  radix of the String representation.
      * @return String representation of this BigInteger in the given radix.
-     * @see Integer.toString
+     * @see Int.toString
      *
      * @see Character.forDigit
      *
@@ -4307,7 +4286,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @see .toIntExact
      */
     override fun toInt(): Int {
-        var result = 0
+        var result: Int
         result = getInt(0)
         return result
     }
@@ -4592,7 +4571,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @return this `BigInteger` converted to a `long`.
      * @throws ArithmeticException if the value of `this` will
      * not exactly fit in a `long`.
-     * @see BigInteger.longValue
+     * @see BigInteger.toLong
      *
      * @since  1.8
      */
@@ -4609,7 +4588,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @return this `BigInteger` converted to an `int`.
      * @throws ArithmeticException if the value of `this` will
      * not exactly fit in a `int`.
-     * @see BigInteger.intValue
+     * @see BigInteger.toInt
      *
      * @since  1.8
      */
@@ -4626,7 +4605,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @return this `BigInteger` converted to a `short`.
      * @throws ArithmeticException if the value of `this` will
      * not exactly fit in a `short`.
-     * @see BigInteger.shortValue
+     * @see BigInteger.toShort
      *
      * @since  1.8
      */
@@ -4647,7 +4626,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @return this `BigInteger` converted to a `byte`.
      * @throws ArithmeticException if the value of `this` will
      * not exactly fit in a `byte`.
-     * @see BigInteger.byteValue
+     * @see BigInteger.toByte
      *
      * @since  1.8
      */

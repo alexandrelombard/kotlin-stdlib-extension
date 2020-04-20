@@ -1,14 +1,12 @@
 package org.apache.commonskt.math.biginteger
 
 import org.apache.commonskt.math.BigInteger
-import org.jetbrains.annotations.TestOnly
 import org.junit.Test
 import kotlin.experimental.and
 import kotlin.experimental.or
 import kotlin.math.min
 import kotlin.random.Random
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 /**
  * Test the commons BigInteger class by comparing its output to the JVM BigInteger implementation
