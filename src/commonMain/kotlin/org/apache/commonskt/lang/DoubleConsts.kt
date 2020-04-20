@@ -25,4 +25,5 @@ object DoubleConsts {
      */
     const val SIGNIFICAND_WIDTH = 53
     const val SIZE = 64
+    const val EXP_BIT_MASK = 9218868437227405312L
 }
