@@ -742,7 +742,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         val u: BigInteger = lucasLehmerSequence(d, thisPlusOne, this)
 
         // Step 3
-        return u.rem(this) == ZERO
+        return u.mod(this) == ZERO
     }
 
     /**
@@ -1115,7 +1115,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             if (p and u and 2 != 0) // p = u = 3 (mod 4)?
                 j = -j
             // And reduce u mod p
-            u = n.rem(valueOf(p.toLong())).toInt()
+            u = n.mod(valueOf(p.toLong())).toInt()
 
             // Now compute Jacobi(u,p), u < p
             while (u != 0) {
@@ -1148,17 +1148,17 @@ class BigInteger : Number, Comparable<BigInteger> {
             var v: BigInteger = ONE
             var v2: BigInteger
             for (i in k.bitLength() - 2 downTo 0) {
-                u2 = u.multiply(v).rem(n)
-                v2 = v.square().add(d.multiply(u.square())).rem(n)
+                u2 = u.multiply(v).mod(n)
+                v2 = v.square().add(d.multiply(u.square())).mod(n)
                 if (v2.testBit(0)) v2 = v2.subtract(n)
                 v2 = v2.shiftRight(1)
                 u = u2
                 v = v2
                 if (k.testBit(i)) {
-                    u2 = u.add(v).rem(n)
+                    u2 = u.add(v).mod(n)
                     if (u2.testBit(0)) u2 = u2.subtract(n)
                     u2 = u2.shiftRight(1)
-                    v2 = v.add(d.multiply(u)).rem(n)
+                    v2 = v.add(d.multiply(u)).mod(n)
                     if (v2.testBit(0)) v2 = v2.subtract(n)
                     v2 = v2.shiftRight(1)
                     u = u2
@@ -3277,7 +3277,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @throws ArithmeticException `m`  0
      * @see .remainder
      */
-    operator fun rem(m: BigInteger): BigInteger {
+    fun mod(m: BigInteger): BigInteger {
         if (m.signum <= 0) throw ArithmeticException("BigInteger: modulus not positive")
         val result: BigInteger = remainder(m)
         return if (result.signum >= 0) result else result.add(m)
@@ -3307,7 +3307,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         if (this == negConst[1] && !exponent.testBit(0)) return if (m == ONE) ZERO else ONE
         var invertResult: Boolean
         if ((exponent.signum < 0).also { invertResult = it }) exponent = exponent.negate()
-        val base: BigInteger = if (signum < 0 || this.compareTo(m) >= 0) rem(m) else this
+        val base: BigInteger = if (signum < 0 || this.compareTo(m) >= 0) mod(m) else this
         val result: BigInteger
         result = if (m.testBit(0)) { // odd modulus
             base.oddModPow(exponent, m)
@@ -3324,7 +3324,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             val m2: BigInteger = ONE.shiftLeft(p) // 2**p
 
             // Calculate new base from m1
-            val base2: BigInteger = if (signum < 0 || this.compareTo(m1) >= 0) rem(m1) else this
+            val base2: BigInteger = if (signum < 0 || this.compareTo(m1) >= 0) mod(m1) else this
 
             // Caculate (base ** exponent) mod m1.
             val a1: BigInteger =
@@ -3340,7 +3340,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             val y1: BigInteger = m2.modInverse(m1)
             val y2: BigInteger = m1.modInverse(m2)
             if (m.mag.size < MAX_MAG_LENGTH / 2) {
-                a1.multiply(m2).multiply(y1).add(a2.multiply(m1).multiply(y2)).rem(m)
+                a1.multiply(m2).multiply(y1).add(a2.multiply(m1).multiply(y2)).mod(m)
             } else {
                 val t1 = MutableBigInteger()
                 MutableBigInteger(a1.multiply(m2)).multiply(MutableBigInteger(y1), t1)
@@ -3632,7 +3632,7 @@ class BigInteger : Number, Comparable<BigInteger> {
 
         // Calculate (this mod m)
         var modVal: BigInteger = this
-        if (signum < 0 || this.compareMagnitude(m) >= 0) modVal = rem(m)
+        if (signum < 0 || this.compareMagnitude(m) >= 0) modVal = mod(m)
         if (modVal == ONE) return ONE
         val a = MutableBigInteger(modVal)
         val b = MutableBigInteger(m)
@@ -4637,4 +4637,25 @@ class BigInteger : Number, Comparable<BigInteger> {
         }
         throw ArithmeticException("BigInteger out of byte range")
     }
+
+    // region Operators
+    operator fun unaryMinus(): BigInteger {
+        return this.negate()
+    }
+    operator fun plus(b: BigInteger): BigInteger {
+        return this.add(b)
+    }
+    operator fun minus(b: BigInteger): BigInteger {
+        return this.subtract(b)
+    }
+    operator fun times(b: BigInteger): BigInteger {
+        return this.multiply(b)
+    }
+    operator fun div(b: BigInteger): BigInteger {
+        return this.divide(b)
+    }
+    operator fun rem(b: BigInteger): BigInteger {
+        return this.remainder(b)
+    }
+    // endregion
 }

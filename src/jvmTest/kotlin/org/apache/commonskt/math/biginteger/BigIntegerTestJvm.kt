@@ -90,7 +90,7 @@ class BigIntegerTestJvm {
                 val b1jvm = java.math.BigInteger(b1c.toString())
                 val b2jvm = java.math.BigInteger(b2c.toString())
 
-                assertEquals(b1jvm.rem(b2jvm).toString(), b1c.rem(b2c).toString())
+                assertEquals(b1jvm.mod(b2jvm).toString(), b1c.mod(b2c).toString())
             } catch (e: ArithmeticException) {
                 // Divisor is equal to zero
             }
@@ -103,35 +103,36 @@ class BigIntegerTestJvm {
      * numbers, empty BigIntegers, etc.
      *
      * If order is less than 2, order is changed to 2.
+     * @param order the order
      */
     private fun fetchNumber(order: Int): BigInteger {
-        var order = order
+        var localOrder = order
         val negative: Boolean = random.nextBoolean()
         val numType: Int = random.nextInt(7)
         var result: BigInteger?
-        if (order < 2) order = 2
+        if (localOrder < 2) localOrder = 2
         when (numType) {
             0 -> result = BigInteger.ZERO
             1 -> result = BigInteger.ONE
             2 -> {
-                val numBytes = (order + 7) / 8
+                val numBytes = (localOrder + 7) / 8
                 val fullBits = ByteArray(numBytes)
                 var i = 0
                 while (i < numBytes) {
                     fullBits[i] = 0xff.toByte()
                     i++
                 }
-                val excessBits = 8 * numBytes - order
+                val excessBits = 8 * numBytes - localOrder
                 fullBits[0] = fullBits[0] and ((1 shl 8 - excessBits) - 1).toByte()
                 result = BigInteger(1, fullBits)
             }
-            3 -> result = BigInteger.ONE.shiftLeft(random.nextInt(order))
+            3 -> result = BigInteger.ONE.shiftLeft(random.nextInt(localOrder))
             4 -> {
-                val `val` = ByteArray((order + 7) / 8)
-                val iterations: Int = random.nextInt(order)
+                val `val` = ByteArray((localOrder + 7) / 8)
+                val iterations: Int = random.nextInt(localOrder)
                 var i = 0
                 while (i < iterations) {
-                    val bitIdx: Int = random.nextInt(order)
+                    val bitIdx: Int = random.nextInt(localOrder)
                     `val`[bitIdx / 8] = `val`[bitIdx / 8] or (1 shl (bitIdx % 8)).toByte()
                     i++
                 }
@@ -140,10 +141,10 @@ class BigIntegerTestJvm {
             }
             5 -> {
                 var localResult = BigInteger.ZERO
-                var remaining = order
+                var remaining = localOrder
                 var bit = random.nextInt(2)
                 while (remaining > 0) {
-                    val runLength = min(remaining, random.nextInt(order))
+                    val runLength = min(remaining, random.nextInt(localOrder))
                     localResult = localResult.shiftLeft(runLength)
                     if (bit > 0)
                         localResult = localResult.add(BigInteger.ONE.shiftLeft(runLength).subtract(BigInteger.ONE))
@@ -152,7 +153,7 @@ class BigIntegerTestJvm {
                 }
                 result = localResult
             }
-            else -> result = BigInteger(order, random)
+            else -> result = BigInteger(localOrder, random)
         }
         if (negative) result = result.negate()
         return result

@@ -847,7 +847,7 @@ class BigIntegerTest {
             val base = fetchNumber(order2)
             val exp: BigInteger = fetchNumber(8).abs()
             val z: BigInteger = base.modPow(exp, m)
-            val w: BigInteger = base.pow(exp.toInt()).rem(m)
+            val w: BigInteger = base.pow(exp.toInt()).mod(m)
             if (z != w) {
                 eprintln("z is $z")
                 eprintln("w is $w")
