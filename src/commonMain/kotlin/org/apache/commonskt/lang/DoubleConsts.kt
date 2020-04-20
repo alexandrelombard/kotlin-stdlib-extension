@@ -8,6 +8,7 @@ object DoubleConsts {
     const val EXP_BIAS = 1023
     const val MIN_EXPONENT = -1022
     const val MAX_EXPONENT = 1023
+    const val MIN_NORMAL = 2.2250738585072014E-308
     /**
      * Bit mask to isolate the sign bit of a `double`.
      */
