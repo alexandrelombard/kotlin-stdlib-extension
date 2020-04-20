@@ -34,7 +34,8 @@ import kotlin.math.sign
 import org.apache.commonskt.PublicApi
 import org.apache.commonskt.assert
 import org.apache.commonskt.collections.copyOf
-import org.apache.commonskt.io.eformat
+import org.apache.commonskt.io.eprint
+import org.apache.commonskt.io.eprintln
 import org.apache.commonskt.lang.Character
 import kotlin.native.concurrent.ThreadLocal
 
@@ -2126,7 +2127,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * is negative, zero, or positive.
      */
     fun signum(): Int {
-        return if (intCompact != INFLATED) intCompact.sign else intVal!!.signum()
+        return if (intCompact != INFLATED) intCompact.sign else intVal!!.signum
     }
 
     /**
@@ -2479,7 +2480,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @since 1.5
      */
     fun stripTrailingZeros(): BigDecimal {
-        return if (intCompact == 0L || intVal != null && intVal.signum() == 0) {
+        return if (intCompact == 0L || intVal != null && intVal.signum == 0) {
             ZERO
         } else if (intCompact != INFLATED) {
             createAndStripZerosToMatchScale(
@@ -3433,7 +3434,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             asInt = if (`val` > Int.MAX_VALUE) Int.MAX_VALUE else Int.MIN_VALUE
             var b: BigInteger?
             if (intCompact != 0L &&
-                (intVal.also { b = it } === null || b?.signum() != 0)
+                (intVal.also { b = it } === null || b?.signum != 0)
             ) throw ArithmeticException(if (asInt > 0) "Underflow" else "Overflow")
         }
         return asInt
@@ -4034,13 +4035,9 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * Internal printing routine
          */
         private fun print(name: String, bd: BigDecimal) {
-            eformat(
-                "%s:\tintCompact %d\tintVal %d\tscale %d\tprecision %d%n",
-                name,
-                bd.intCompact,
-                bd.intVal!!,
-                bd.scale,
-                bd.precision
+            eprintln(
+                "$name:\tintCompact ${bd.intCompact}\t" +
+                        "intVal ${bd.intVal!!}\tscale ${bd.scale}\tprecision ${bd.precision}"
             )
         }
 
@@ -4066,7 +4063,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             var asInt = `val`.toInt()
             if (asInt.toLong() != `val`) {
                 asInt = if (`val` > Int.MAX_VALUE) Int.MAX_VALUE else Int.MIN_VALUE
-                if (intVal.signum() != 0) throw ArithmeticException(if (asInt > 0) "Underflow" else "Overflow")
+                if (intVal.signum != 0) throw ArithmeticException(if (asInt > 0) "Underflow" else "Overflow")
             }
             return asInt
         }
@@ -4538,7 +4535,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             ) {
                 if (intVal.testBit(0)) break // odd number cannot end in 0
                 qr = intVal.divideAndRemainder(BigInteger.TEN)
-                if (qr[1].signum() != 0) break // non-0 remainder
+                if (qr[1].signum != 0) break // non-0 remainder
                 intVal = qr[0]
                 scale = checkScale(intVal, scale.toLong() - 1) // could Overflow
             }

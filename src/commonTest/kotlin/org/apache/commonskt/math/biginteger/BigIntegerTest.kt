@@ -642,7 +642,7 @@ class BigIntegerTest {
             var y: BigInteger
 
             // Test setBit and clearBit (and testBit)
-            if (x.signum() < 0) {
+            if (x.signum < 0) {
                 y = BigInteger.valueOf(-1)
                 for (j in 0 until x.bitLength()) if (!x.testBit(j)) y = y.clearBit(j)
             } else {
@@ -652,8 +652,8 @@ class BigIntegerTest {
             if (x != y) failCount1++
 
             // Test flipBit (and testBit)
-            y = BigInteger.valueOf(if (x.signum() < 0) -1 else 0.toLong())
-            for (j in 0 until x.bitLength()) if ((x.signum() < 0) xor x.testBit(j)) y = y.flipBit(j)
+            y = BigInteger.valueOf(if (x.signum < 0) -1 else 0.toLong())
+            for (j in 0 until x.bitLength()) if ((x.signum < 0) xor x.testBit(j)) y = y.flipBit(j)
             if (x != y) failCount2++
         }
         report("clearBit/testBit for $order bits", failCount1)
@@ -663,7 +663,7 @@ class BigIntegerTest {
 
             // Test getLowestSetBit()
             val k: Int = x.lowestSetBit
-            if (x.signum() == 0) {
+            if (x.signum == 0) {
                 if (k != -1) failCount3++
             } else {
                 val z: BigInteger = x.and(x.negate())
@@ -712,7 +712,7 @@ class BigIntegerTest {
             val n: Int = abs(random.nextInt() % 200)
             if (x.shiftLeft(n) != x.multiply(BigInteger.valueOf(2L).pow(n))) failCount1++
             val y: Array<BigInteger> = x.divideAndRemainder(BigInteger.valueOf(2L).pow(n))
-            val z: BigInteger = if (x.signum() < 0 && y[1].signum() != 0) y[0]
+            val z: BigInteger = if (x.signum < 0 && y[1].signum != 0) y[0]
                 .subtract(BigInteger.ONE) else y[0]
             val b: BigInteger = x.shiftRight(n)
             if (b != z) {
@@ -830,7 +830,7 @@ class BigIntegerTest {
             try {
                 val inv: BigInteger = x.modInverse(m)
                 var prod: BigInteger = inv.multiply(x).remainder(m)
-                if (prod.signum() == -1) prod = prod.add(m)
+                if (prod.signum == -1) prod = prod.add(m)
                 if (prod == BigInteger.ONE) successCount++ else failCount++
             } catch (e: ArithmeticException) {
                 nonInvCount++

@@ -44,6 +44,7 @@ import kotlin.math.*
  * @author  Timothy Buktu
  * @since   1.3
  */
+@Suppress("NAME_SHADOWING", "unused")
 @ExperimentalUnsignedTypes
 @ExperimentalStdlibApi
 internal open class MutableBigInteger {
@@ -130,7 +131,7 @@ internal open class MutableBigInteger {
      * supposed to modify the returned array.
      */
     private val magnitudeArray: IntArray
-        private get() = if (offset > 0 || value.size != intLen) value.copyOfRange(
+        get() = if (offset > 0 || value.size != intLen) value.copyOfRange(
             offset,
             offset + intLen
         ) else value
@@ -317,7 +318,7 @@ internal open class MutableBigInteger {
      * magnitude of this MutableBigInteger is zero, -1 is returned.
      */
     private val lowestSetBit: Int
-        private get() {
+        get() {
             if (intLen == 0) return -1
             var j: Int
             val b: Int
@@ -1220,7 +1221,7 @@ internal open class MutableBigInteger {
             // final iteration of step 8: do the loop one more time for i=0 but leave z unchanged
             ri = z.divide2n1n(bShifted, qi)
             quotient.add(qi)
-            ri!!.rightShift(sigma) // step 9: a and b were shifted, so shift back
+            ri.rightShift(sigma) // step 9: a and b were shifted, so shift back
             ri
         }
     }
@@ -1291,7 +1292,7 @@ internal open class MutableBigInteger {
         val d: MutableBigInteger
         if (compareShifted(b, n) < 0) {
             // step 3a: if a1<b1, let quotient=a12/b1 and r=a12%b1
-            r = a12.divide2n1n(b1, quotient)!!
+            r = a12.divide2n1n(b1, quotient)
 
             // step 4: d=quotient*b2
             d = MutableBigInteger(quotient.toBigInteger().multiply(b2))
@@ -1460,8 +1461,8 @@ internal open class MutableBigInteger {
         for (j in 0 until limit - 1) {
             // D3 Calculate qhat
             // estimate qhat
-            var qhat = 0
-            var qrem = 0
+            var qhat: Int
+            var qrem: Int
             var skipCorrection = false
             val nh = rem.value[j + rem.offset]
             val nh2 = nh + -0x80000000
@@ -1514,8 +1515,8 @@ internal open class MutableBigInteger {
         } // D7 loop on j
         // D3 Calculate qhat
         // estimate qhat
-        var qhat = 0
-        var qrem = 0
+        var qhat: Int
+        var qrem: Int
         var skipCorrection = false
         val nh = rem.value[limit - 1 + rem.offset]
         val nh2 = nh + -0x80000000
@@ -1628,8 +1629,8 @@ internal open class MutableBigInteger {
         for (j in 0 until limit) {
             // D3 Calculate qhat
             // estimate qhat
-            var qhat = 0
-            var qrem = 0
+            var qhat: Int
+            var qrem: Int
             var skipCorrection = false
             val nh: Int = rem.value.get(j + rem.offset)
             val nh2 = nh + -0x80000000
@@ -1915,7 +1916,7 @@ internal open class MutableBigInteger {
         if (oddMod.isOne) return modInverseMP2(powersOf2)
 
         // Calculate 1/a mod oddMod
-        val oddPart = modInverse(oddMod)!!
+        val oddPart = modInverse(oddMod)
 
         // Calculate 1/a mod evenMod
         val evenPart = modInverseMP2(powersOf2)
@@ -2042,13 +2043,12 @@ internal open class MutableBigInteger {
         var a = MutableBigInteger(this)
         var q = MutableBigInteger()
         var r = b.divide(a, q)!!
-        var swapper = b
+        var swapper: MutableBigInteger
         // swap b & r
         b = r
-        r = swapper
         val t1 = MutableBigInteger(q)
         val t0 = MutableBigInteger(1)
-        var temp: MutableBigInteger = MutableBigInteger()
+        var temp = MutableBigInteger()
         while (!b.isOne) {
             r = a.divide(b, q)!!
             if (r.intLen == 0) throw ArithmeticException("BigInteger not invertible.")
@@ -2062,7 +2062,6 @@ internal open class MutableBigInteger {
             if (a.isOne) return t0
             r = b.divide(a, q)!!
             if (r.intLen == 0) throw ArithmeticException("BigInteger not invertible.")
-            swapper = b
             b = r
             if (q.intLen == 1) t0.mul(q.value[q.offset], temp) else q.multiply(t0, temp)
             swapper = q

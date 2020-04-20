@@ -55,6 +55,7 @@ import org.apache.commonskt.PublicApi
  * @since 1.5
  */
 @PublicApi
+@ExperimentalUnsignedTypes
 @ExperimentalStdlibApi
 class MathContext {
     /* ----- Shared Properties ----- */

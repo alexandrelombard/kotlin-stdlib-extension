@@ -3257,15 +3257,6 @@ class BigInteger : Number, Comparable<BigInteger> {
         return BigInteger(mag, -signum)
     }
 
-    /**
-     * Returns the signum function of this BigInteger.
-     *
-     * @return -1, 0 or 1 as the value of this BigInteger is negative, zero or
-     * positive.
-     */
-    fun signum(): Int {
-        return signum
-    }
     // Modular Arithmetic Operations
     /**
      * Returns a BigInteger whose value is `(this mod m`).  This method
