@@ -244,6 +244,55 @@ fun toIntExact(value: Long): Int {
 }
 
 /**
+ * Returns the unbiased exponent used in the representation of a
+ * `float`.  Special cases:
+ *
+ *
+ *  * If the argument is NaN or infinite, then the result is
+ * [Float.MAX_EXPONENT] + 1.
+ *  * If the argument is zero or subnormal, then the result is
+ * [Float.MIN_EXPONENT] -1.
+ *
+ * @param f a `float` value
+ * @return the unbiased exponent of the argument
+ * @since 1.6
+ */
+fun Float.exponent(): Int {
+    /*
+         * Bitwise convert f to integer, mask out exponent bits, shift
+         * to the right and then subtract out float's bias adjust to
+         * get true exponent value
+         */
+    return (this.toRawBits() and FloatConsts.EXP_BIT_MASK shr
+            FloatConsts.SIGNIFICAND_WIDTH - 1) - FloatConsts.EXP_BIAS
+}
+
+/**
+ * Returns the unbiased exponent used in the representation of a
+ * `double`.  Special cases:
+ *
+ *
+ *  * If the argument is NaN or infinite, then the result is
+ * [Double.MAX_EXPONENT] + 1.
+ *  * If the argument is zero or subnormal, then the result is
+ * [Double.MIN_EXPONENT] -1.
+ *
+ * @param d a `double` value
+ * @return the unbiased exponent of the argument
+ * @since 1.6
+ */
+@ExperimentalUnsignedTypes
+fun Double.exponent(): Int {
+    /*
+         * Bitwise convert d to long, mask out exponent bits, shift
+         * to the right and then subtract out double's bias adjust to
+         * get true exponent value.
+         */
+    return ((this.toRawBits() and DoubleConsts.EXP_BIT_MASK shr
+            DoubleConsts.SIGNIFICAND_WIDTH - 1) - DoubleConsts.EXP_BIAS).toInt()
+}
+
+/**
  * Returns `d`
  * 2<sup>`scaleFactor`</sup> rounded as if performed
  * by a single correctly rounded floating-point multiply to a
