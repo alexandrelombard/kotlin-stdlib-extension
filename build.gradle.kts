@@ -50,3 +50,42 @@ kotlin {
         }
     }
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "org.apache.commonskt"
+            artifactId = "kotlin-stdlib-extension"
+            version = "1.0-SNAPSHOT"
+            name = "Kotlin Stdlib Extension"
+            description = "Port of Java standard library features to Kotlin"
+            pom {
+                url.set("https://github.com/alexandrelombard/kotlin-stdlib-extension")
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("alombard")
+                        name.set("Alexandre Lombard")
+                        email.set("alexandre.lombard@utbm.fr")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:https://github.com/alexandrelombard/kotlin-stdlib-extension.git")
+                    developerConnection.set("scm:git:git@github.com:alexandrelombard/kotlin-stdlib-extension.git")
+                    url.set("https://github.com/alexandrelombard/kotlin-stdlib-extension")
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+        }
+    }
+}
