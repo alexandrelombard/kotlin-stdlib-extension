@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "org.apache.commonskt"
-version = "1.0.1"
+version = "1.0.2-SNAPSHOT"
 description = "Multiplatform extension of Kotlin stdlib"
 
 repositories {
