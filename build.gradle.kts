@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "org.apache.commonskt"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
@@ -56,10 +56,10 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "org.apache.commonskt"
             artifactId = "kotlin-stdlib-extension"
-            version = "1.0-SNAPSHOT"
-            name = "Kotlin Stdlib Extension"
+            version = project.version.toString()
             description = "Port of Java standard library features to Kotlin"
             pom {
+                name.set("Kotlin Stdlib Extension")
                 url.set("https://github.com/alexandrelombard/kotlin-stdlib-extension")
                 licenses {
                     license {
