@@ -1,4 +1,5 @@
 import com.jfrog.bintray.gradle.BintrayExtension
+import java.util.Properties
 
 plugins {
     kotlin("multiplatform") version "1.3.72"
@@ -7,7 +8,7 @@ plugins {
 }
 
 group = "org.apache.commonskt"
-version = "1.0.1-SNAPSHOT"
+version = "1.0.1"
 description = "Multiplatform extension of Kotlin stdlib"
 
 repositories {
@@ -56,32 +57,12 @@ kotlin {
     }
 }
 
-//val pomConfig = org.gradle.api.publish.maven.MavenPom {
-//    name.set("Kotlin Stdlib Extension")
-//    url.set("https://github.com/alexandrelombard/kotlin-stdlib-extension")
-//    licenses {
-//        license {
-//            name.set("The Apache License, Version 2.0")
-//            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-//        }
-//    }
-//    developers {
-//        developer {
-//            id.set("alombard")
-//            name.set("Alexandre Lombard")
-//            email.set("alexandre.lombard@utbm.fr")
-//        }
-//    }
-//    scm {
-//        connection.set("scm:git:https://github.com/alexandrelombard/kotlin-stdlib-extension.git")
-//        developerConnection.set("scm:git:git@github.com:alexandrelombard/kotlin-stdlib-extension.git")
-//        url.set("https://github.com/alexandrelombard/kotlin-stdlib-extension")
-//    }
-//}
+val properties = Properties()
+properties.load(project.rootProject.file("local.properties").inputStream())
 
 bintray {
-    user = "alexandrelombard"
-    key = System.getenv("BINTRAY_KEY")
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
     dryRun = false
     publish = true
     val pubs = publishing.publications
@@ -91,12 +72,13 @@ bintray {
     setPublications(*pubs)
     pkg(delegateClosureOf<BintrayExtension.PackageConfig> {
         repo = "maven"
-        name = project.name
+        name = "kotlin-stdlib-extension"
         desc = project.description
+        githubRepo = "https://github.com/alexandrelombard/kotlin-stdlib-extension"
         websiteUrl = "https://github.com/alexandrelombard/kotlin-stdlib-extension"
         vcsUrl = "https://github.com/alexandrelombard/kotlin-stdlib-extension.git"
         version.vcsTag = "v${project.version}"
-        setLicenses("The Apache License, Version 2.0")
+        setLicenses("Apache-2.0")
         publicDownloadNumbers = true
     })
 }
