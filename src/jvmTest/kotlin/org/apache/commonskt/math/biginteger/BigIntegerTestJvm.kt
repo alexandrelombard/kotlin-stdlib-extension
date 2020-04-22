@@ -16,6 +16,9 @@ import kotlin.test.assertEquals
 @ExperimentalStdlibApi
 class BigIntegerTestJvm {
 
+    private val SIZE = 100
+    private val ORDER_KARATSUBA = 1023
+
     private val random = Random.Default
 
     @Test

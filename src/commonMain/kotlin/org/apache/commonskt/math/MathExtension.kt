@@ -1,3 +1,5 @@
+@file:Suppress("unused", "NAME_SHADOWING")
+
 package org.apache.commonskt.math
 
 import org.apache.commonskt.assert
@@ -249,11 +251,10 @@ fun toIntExact(value: Long): Int {
  *
  *
  *  * If the argument is NaN or infinite, then the result is
- * [Float.MAX_EXPONENT] + 1.
+ * [FloatConsts.MAX_EXPONENT] + 1.
  *  * If the argument is zero or subnormal, then the result is
- * [Float.MIN_EXPONENT] -1.
+ * [FloatConsts.MIN_EXPONENT] -1.
  *
- * @param f a `float` value
  * @return the unbiased exponent of the argument
  * @since 1.6
  */
@@ -273,11 +274,10 @@ fun Float.exponent(): Int {
  *
  *
  *  * If the argument is NaN or infinite, then the result is
- * [Double.MAX_EXPONENT] + 1.
+ * [DoubleConsts.MAX_EXPONENT] + 1.
  *  * If the argument is zero or subnormal, then the result is
- * [Double.MIN_EXPONENT] -1.
+ * [DoubleConsts.MIN_EXPONENT] -1.
  *
- * @param d a `double` value
  * @return the unbiased exponent of the argument
  * @since 1.6
  */
@@ -298,7 +298,7 @@ fun Double.exponent(): Int {
  * by a single correctly rounded floating-point multiply to a
  * member of the double value set.  See the Java
  * Language Specification for a discussion of floating-point
- * value sets.  If the exponent of the result is between [ ][Double.MIN_EXPONENT] and [Double.MAX_EXPONENT], the
+ * value sets.  If the exponent of the result is between [ ][DoubleConsts.MIN_EXPONENT] and [DoubleConsts.MAX_EXPONENT], the
  * answer is calculated exactly.  If the exponent of the result
  * would be larger than `Double.MAX_EXPONENT`, an
  * infinity is returned.  Note that if the result is subnormal,
@@ -317,7 +317,6 @@ fun Double.exponent(): Int {
  * sign is returned.
  *
  *
- * @param d number to be scaled by a power of two.
  * @param scaleFactor power of 2 used to scale `d`
  * @return `d`  2<sup>`scaleFactor`</sup>
  * @since 1.6
@@ -370,9 +369,9 @@ fun Double.scalb(scaleFactor: Int): Double {
     var scaleFactor = scaleFactor
     val MAX_SCALE: Int = DoubleConsts.MAX_EXPONENT + -DoubleConsts.MIN_EXPONENT +
             DoubleConsts.SIGNIFICAND_WIDTH + 1
-    var exp_adjust = 0
-    var scale_increment = 0
-    var exp_delta = Double.NaN
+    val exp_adjust: Int
+    val scale_increment: Int
+    val exp_delta: Double
 
     // Make sure scaling factor is in a reasonable range
     if (scaleFactor < 0) {
@@ -404,7 +403,7 @@ fun Double.scalb(scaleFactor: Int): Double {
  * by a single correctly rounded floating-point multiply to a
  * member of the float value set.  See the Java
  * Language Specification for a discussion of floating-point
- * value sets.  If the exponent of the result is between [ ][Float.MIN_EXPONENT] and [Float.MAX_EXPONENT], the
+ * value sets.  If the exponent of the result is between [ ][FloatConsts.MIN_EXPONENT] and [FloatConsts.MAX_EXPONENT], the
  * answer is calculated exactly.  If the exponent of the result
  * would be larger than `Float.MAX_EXPONENT`, an
  * infinity is returned.  Note that if the result is subnormal,
@@ -422,8 +421,6 @@ fun Double.scalb(scaleFactor: Int): Double {
  *  *  If the first argument is zero, then a zero of the same
  * sign is returned.
  *
- *
- * @param f number to be scaled by a power of two.
  * @param scaleFactor power of 2 used to scale `f`
  * @return `f`  2<sup>`scaleFactor`</sup>
  * @since 1.6

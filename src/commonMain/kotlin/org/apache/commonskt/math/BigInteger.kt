@@ -4511,8 +4511,6 @@ class BigInteger : Number, Comparable<BigInteger> {
     private fun firstNonzeroIntNum(): Int {
         var fn = firstNonzeroIntNum - 2
         if (fn == -2) { // firstNonzeroIntNum not initialized yet
-            fn = 0
-
             // Search for the first nonzero int
             var i: Int
             val mlen = mag.size
