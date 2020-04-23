@@ -7,8 +7,8 @@ plugins {
     id("com.jfrog.bintray") version "1.8.5"
 }
 
-group = "org.apache.commonskt"
-version = "1.0.2"
+group = "com.github.alexandrelombard.commonskt"
+version = "1.0.3"
 description = "Multiplatform extension of Kotlin stdlib"
 
 repositories {
