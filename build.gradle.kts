@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.github.alexandrelombard.commonskt"
-version = "1.0.3"
+version = "1.0.4-SNAPSHOT"
 description = "Multiplatform extension of Kotlin stdlib"
 
 repositories {
