@@ -45,8 +45,6 @@ import kotlin.math.*
  * @since   1.3
  */
 @Suppress("NAME_SHADOWING", "unused")
-@ExperimentalUnsignedTypes
-@ExperimentalStdlibApi
 internal open class MutableBigInteger {
     /**
      * Holds the magnitude of this MutableBigInteger in big endian order.
@@ -317,6 +315,7 @@ internal open class MutableBigInteger {
      * Return the index of the lowest set bit in this MutableBigInteger. If the
      * magnitude of this MutableBigInteger is zero, -1 is returned.
      */
+    @ExperimentalStdlibApi
     private val lowestSetBit: Int
         get() {
             if (intLen == 0) return -1
@@ -472,6 +471,7 @@ internal open class MutableBigInteger {
     /**
      * Returns a String representation of this MutableBigInteger in radix 10.
      */
+    @ExperimentalStdlibApi
     override fun toString(): String {
         val b: BigInteger = toBigInteger(1)
         return b.toString()
@@ -480,6 +480,7 @@ internal open class MutableBigInteger {
     /**
      * Like [.rightShift] but `n` can be greater than the length of the number.
      */
+    @ExperimentalStdlibApi
     fun safeRightShift(n: Int) {
         if (n / 32 >= intLen) {
             reset()
@@ -492,6 +493,7 @@ internal open class MutableBigInteger {
      * Right shift this MutableBigInteger n bits. The MutableBigInteger is left
      * in normal form.
      */
+    @ExperimentalStdlibApi
     fun rightShift(n: Int) {
         if (intLen == 0) return
         val nInts = n ushr 5
@@ -510,6 +512,7 @@ internal open class MutableBigInteger {
     /**
      * Like [.leftShift] but `n` can be zero.
      */
+    @ExperimentalStdlibApi
     fun safeLeftShift(n: Int) {
         if (n > 0) {
             leftShift(n)
@@ -519,6 +522,7 @@ internal open class MutableBigInteger {
     /**
      * Left shift this MutableBigInteger n bits.
      */
+    @ExperimentalStdlibApi
     fun leftShift(n: Int) {
         /*
          * If there is enough storage space in this MutableBigInteger already
@@ -1016,6 +1020,7 @@ internal open class MutableBigInteger {
      *
      * @return the remainder of the division is returned.
      */
+    @ExperimentalStdlibApi
     fun divideOneWord(divisor: Int, quotient: MutableBigInteger?): Int {
         val divisorLong = (divisor.toLong() and BigInteger.LONG_MASK)
 
@@ -1070,6 +1075,7 @@ internal open class MutableBigInteger {
      * provided MutableBigInteger objects and the remainder object is returned.
      *
      */
+    @ExperimentalStdlibApi
     fun divide(
         b: MutableBigInteger,
         quotient: MutableBigInteger,
@@ -1097,6 +1103,7 @@ internal open class MutableBigInteger {
     /**
      * @see .divideKnuth
      */
+    @ExperimentalStdlibApi
     fun divideKnuth(
         b: MutableBigInteger,
         quotient: MutableBigInteger,
@@ -1163,6 +1170,7 @@ internal open class MutableBigInteger {
      * @param quotient output parameter for `this/b`
      * @return the remainder
      */
+    @ExperimentalStdlibApi
     fun divideAndRemainderBurnikelZiegler(
         b: MutableBigInteger,
         quotient: MutableBigInteger
@@ -1236,6 +1244,7 @@ internal open class MutableBigInteger {
      * @param quotient output parameter for `this/b`
      * @return `this%b`
      */
+    @ExperimentalStdlibApi
     private fun divide2n1n(
         b: MutableBigInteger,
         quotient: MutableBigInteger
@@ -1274,6 +1283,7 @@ internal open class MutableBigInteger {
      * @param quotient output parameter for `this/b`
      * @return `this%b`
      */
+    @ExperimentalStdlibApi
     private fun divide3n2n(
         b: MutableBigInteger,
         quotient: MutableBigInteger
@@ -1354,6 +1364,7 @@ internal open class MutableBigInteger {
 
     /** @see BigInteger.bitLength
      */
+    @ExperimentalStdlibApi
     fun bitLength(): Long {
         return if (intLen == 0) 0 else intLen * 32L - (value[offset].countLeadingZeroBits())
     }
@@ -1365,6 +1376,7 @@ internal open class MutableBigInteger {
      *
      * @return the remainder of the division will be returned.
      */
+    @ExperimentalStdlibApi
     fun divide(v: Long, quotient: MutableBigInteger): Long {
         var v = v
         if (v == 0L) throw ArithmeticException("BigInteger divide by zero")
@@ -1389,6 +1401,7 @@ internal open class MutableBigInteger {
      * The quotient will be placed into the provided quotient object &
      * the remainder object is returned.
      */
+    @ExperimentalStdlibApi
     private fun divideMagnitude(
         div: MutableBigInteger?,
         quotient: MutableBigInteger?,
@@ -1589,6 +1602,7 @@ internal open class MutableBigInteger {
      * value. The quotient will be placed into the provided quotient object &
      * the remainder object is returned.
      */
+    @ExperimentalStdlibApi
     private fun divideLongMagnitude(
         ldivisor: Long,
         quotient: MutableBigInteger
@@ -1751,6 +1765,7 @@ internal open class MutableBigInteger {
      * @return the integer square root of `this`
      * @since 9
      */
+    @ExperimentalStdlibApi
     fun sqrt(): MutableBigInteger {
         // Special cases.
         if (isZero) {
@@ -1831,6 +1846,7 @@ internal open class MutableBigInteger {
     /**
      * Calculate GCD of this and b. This and b are changed by the computation.
      */
+    @ExperimentalStdlibApi
     fun hybridGCD(b: MutableBigInteger): MutableBigInteger {
         // Use Euclid's algorithm until the numbers are approximately the
         // same length, then use the binary GCD algorithm to find the GCD.
@@ -1850,6 +1866,7 @@ internal open class MutableBigInteger {
      * Calculate GCD of this and v.
      * Assumes that this and v are not zero.
      */
+    @ExperimentalStdlibApi
     private fun binaryGCD(v: MutableBigInteger): MutableBigInteger {
         // Algorithm B from Knuth section 4.5.2
         var v = v
@@ -1900,6 +1917,7 @@ internal open class MutableBigInteger {
      * Returns the modInverse of this mod p. This and p are not affected by
      * the operation.
      */
+    @ExperimentalStdlibApi
     fun mutableModInverse(p: MutableBigInteger): MutableBigInteger {
         // Modulus is odd, use Schroeppel's algorithm
         if (p.isOdd) return modInverse(p)
@@ -1938,6 +1956,7 @@ internal open class MutableBigInteger {
     /*
      * Calculate the multiplicative inverse of this mod 2^k.
      */
+    @ExperimentalStdlibApi
     fun modInverseMP2(k: Int): MutableBigInteger {
         if (isEven) throw ArithmeticException("Non-invertible. (GCD != 1)")
         if (k > 64) return euclidModInverse(k)
@@ -1968,6 +1987,7 @@ internal open class MutableBigInteger {
      * ("Montgomery Form").  The algorithm is described in an unpublished
      * manuscript entitled "Fast Modular Reciprocals."
      */
+    @ExperimentalStdlibApi
     private fun modInverse(mod: MutableBigInteger): MutableBigInteger {
         val p = MutableBigInteger(mod)
         var f = MutableBigInteger(this)
@@ -2036,6 +2056,7 @@ internal open class MutableBigInteger {
      * Uses the extended Euclidean algorithm to compute the modInverse of base
      * mod a modulus that is a power of 2. The modulus is 2^k.
      */
+    @ExperimentalStdlibApi
     fun euclidModInverse(k: Int): MutableBigInteger {
         var b = MutableBigInteger(1)
         b.leftShift(k)
@@ -2155,6 +2176,7 @@ internal open class MutableBigInteger {
         /**
          * Calculate GCD of a and b interpreted as unsigned integers.
          */
+        @ExperimentalStdlibApi
         fun binaryGcd(a: Int, b: Int): Int {
             var a = a
             var b = b
@@ -2210,6 +2232,7 @@ internal open class MutableBigInteger {
         /**
          * Calculate the multiplicative inverse of 2^k mod mod, where mod is odd.
          */
+        @ExperimentalStdlibApi
         fun modInverseBP2(mod: MutableBigInteger, k: Int): MutableBigInteger {
             // Copy the mod to protect original
             return fixup(
@@ -2224,6 +2247,7 @@ internal open class MutableBigInteger {
          * Calculates X such that X = C * 2^(-k) (mod P)
          * Assumes C<P and P is odd.></P>
          */
+        @ExperimentalStdlibApi
         fun fixup(
             c: MutableBigInteger, p: MutableBigInteger,
             k: Int

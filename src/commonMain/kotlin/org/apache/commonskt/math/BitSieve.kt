@@ -46,8 +46,6 @@ import kotlin.random.Random
  * @author  Michael McCloskey
  * @since   1.3
  */
-@ExperimentalUnsignedTypes
-@ExperimentalStdlibApi
 internal class BitSieve {
     /**
      * Stores the bits in this bitSieve.
@@ -92,6 +90,7 @@ internal class BitSieve {
      * candidates. The new sieve begins at the specified base, which must
      * be even.
      */
+    @ExperimentalStdlibApi
     constructor(base: BigInteger, searchLen: Int) {
         /*
          * Candidates are indicated by clear bits in the sieve. As a candidates
@@ -175,6 +174,7 @@ internal class BitSieve {
     /**
      * Test probable primes in the sieve and return successful candidates.
      */
+    @ExperimentalStdlibApi
     fun retrieve(initValue: BigInteger, certainty: Int, random: Random?): BigInteger? {
         // Examine the sieve one long at a time to find possible primes
         var offset = 1

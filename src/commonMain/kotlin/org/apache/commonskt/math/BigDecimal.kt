@@ -240,9 +240,7 @@ import kotlin.native.concurrent.ThreadLocal
  * @author  Sergey V. Kuksenko
  */
 @Suppress("NAME_SHADOWING", "unused")
-@ExperimentalUnsignedTypes
 @PublicApi
-@ExperimentalStdlibApi
 class BigDecimal : Number, Comparable<BigDecimal> {
     /**
      * The unscaled value of this BigDecimal, as returned by [ ][.unscaledValue].
@@ -319,6 +317,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * is not wholly within `in`.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     constructor(`in`: CharArray, offset: Int = 0, len: Int = `in`.size, mc: MathContext = MathContext.UNLIMITED) {
         // protect against huge length, negative values, and integer overflow
         var localOffset = offset
@@ -550,6 +549,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * representation of a `BigDecimal`.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     constructor(`in`: CharArray, mc: MathContext) : this(`in`, 0, `in`.size, mc) {}
 
     /**
@@ -659,6 +659,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @throws NumberFormatException if `val` is not a valid
      * representation of a `BigDecimal`.
      */
+    @ExperimentalStdlibApi
     constructor(`val`: String) : this(`val`.toCharArray(), 0, `val`.length) {}
 
     /**
@@ -675,6 +676,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * representation of a BigDecimal.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     constructor(`val`: String, mc: MathContext) : this(`val`.toCharArray(), 0, `val`.length, mc)
 
     /**
@@ -721,6 +723,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @param  mc the context to use.
      * @throws NumberFormatException if `val` is infinite or NaN.
      */
+    @ExperimentalStdlibApi
     constructor(`val`: Double, mc: MathContext = MathContext.UNLIMITED) {
         if (`val`.isInfinite() || `val`.isNaN()) throw NumberFormatException("Infinite or NaN")
         // Translate the double into sign, exponent and significand, according
@@ -830,6 +833,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * rounding mode is `UNNECESSARY`.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     constructor(`val`: BigInteger, mc: MathContext) : this(`val`, 0, mc) {}
 
     /**
@@ -863,6 +867,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * rounding mode is `UNNECESSARY`.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     constructor(unscaledVal: BigInteger, scale: Int, mc: MathContext) {
         var unscaledVal: BigInteger? = unscaledVal
         var scale = scale
@@ -932,6 +937,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * rounding mode is `UNNECESSARY`.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     constructor(`val`: Int, mc: MathContext) {
         val mcp: Int = mc.precision
         var compactVal = `val`.toLong()
@@ -982,6 +988,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * rounding mode is `UNNECESSARY`.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     constructor(`val`: Long, mc: MathContext) {
         var `val` = `val`
         val mcp: Int = mc.precision
@@ -1035,6 +1042,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @param  augend value to be added to this `BigDecimal`.
      * @return `this + augend`
      */
+    @ExperimentalStdlibApi
     fun add(augend: BigDecimal): BigDecimal {
         return if (intCompact != INFLATED) {
             if (augend.intCompact != INFLATED) {
@@ -1065,6 +1073,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * rounding mode is `UNNECESSARY`.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun add(augend: BigDecimal, mc: MathContext): BigDecimal {
         var augend: BigDecimal = augend
         if (mc.precision == 0) return add(augend)
@@ -1129,6 +1138,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * that the number of digits of the smaller operand could be
      * reduced even though the significands partially overlapped.
      */
+    @ExperimentalStdlibApi
     private fun preAlign(
         lhs: BigDecimal,
         augend: BigDecimal,
@@ -1186,6 +1196,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @param  subtrahend value to be subtracted from this `BigDecimal`.
      * @return `this - subtrahend`
      */
+    @ExperimentalStdlibApi
     fun subtract(subtrahend: BigDecimal): BigDecimal {
         return if (intCompact != INFLATED) {
             if (subtrahend.intCompact != INFLATED) {
@@ -1239,6 +1250,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * rounding mode is `UNNECESSARY`.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun subtract(subtrahend: BigDecimal, mc: MathContext): BigDecimal {
         return if (mc.precision == 0) subtract(subtrahend) else add(subtrahend.negate(), mc)
         // share the special rounding code in add()
@@ -1252,6 +1264,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @param  multiplicand value to be multiplied by this `BigDecimal`.
      * @return `this * multiplicand`
      */
+    @ExperimentalStdlibApi
     fun multiply(multiplicand: BigDecimal): BigDecimal {
         val productScale = checkScale(scale.toLong() + multiplicand.scale)
         return if (intCompact != INFLATED) {
@@ -1280,6 +1293,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * rounding mode is `UNNECESSARY`.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun multiply(multiplicand: BigDecimal, mc: MathContext): BigDecimal {
         if (mc.precision == 0) return multiply(multiplicand)
         val productScale = checkScale(scale.toLong() + multiplicand.scale)
@@ -1354,6 +1368,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      *
      * @see .ROUND_UNNECESSARY
      */
+    @ExperimentalStdlibApi
     fun divide(divisor: BigDecimal, scale: Int, roundingMode: Int): BigDecimal {
         if (roundingMode < ROUND_UP || roundingMode > ROUND_UNNECESSARY)
             throw IllegalArgumentException("Invalid rounding mode")
@@ -1416,6 +1431,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * of the division exactly.
      * @since 1.5
      */
+    @ExperimentalStdlibApi
     fun divide(divisor: BigDecimal, scale: Int, roundingMode: RoundingMode): BigDecimal {
         return divide(divisor, scale, roundingMode.oldMode)
     }
@@ -1455,6 +1471,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      *
      * @see .ROUND_UNNECESSARY
      */
+    @ExperimentalStdlibApi
     fun divide(divisor: BigDecimal, roundingMode: Int): BigDecimal {
         return this.divide(divisor, scale, roundingMode)
     }
@@ -1474,6 +1491,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * of the division exactly.
      * @since 1.5
      */
+    @ExperimentalStdlibApi
     fun divide(divisor: BigDecimal, roundingMode: RoundingMode): BigDecimal {
         return this.divide(divisor, scale, roundingMode.oldMode)
     }
@@ -1492,6 +1510,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @since 1.5
      * @author Joseph D. Darcy
      */
+    @ExperimentalStdlibApi
     fun divide(divisor: BigDecimal): BigDecimal {
         /*
          * Handle zero cases first.
@@ -1554,6 +1573,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * non-terminating decimal expansion.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun divide(divisor: BigDecimal, mc: MathContext): BigDecimal {
         val mcp: Int = mc.precision
         if (mcp == 0) return divide(divisor)
@@ -1633,6 +1653,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @throws ArithmeticException if `divisor==0`
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun divideToIntegralValue(divisor: BigDecimal): BigDecimal {
         // Calculate preferred scale
         val preferredScale: Int = saturateLong(scale.toLong() - divisor.scale)
@@ -1694,6 +1715,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @since  1.5
      * @author Joseph D. Darcy
      */
+    @ExperimentalStdlibApi
     fun divideToIntegralValue(divisor: BigDecimal, mc: MathContext): BigDecimal {
         if (mc.precision == 0 ||  // exact result
             compareMagnitude(divisor) < 0
@@ -1764,6 +1786,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @throws ArithmeticException if `divisor==0`
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun remainder(divisor: BigDecimal): BigDecimal {
         val divrem = this.divideAndRemainder(divisor)
         return divrem[1]
@@ -1794,6 +1817,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @see .divideToIntegralValue
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun remainder(divisor: BigDecimal, mc: MathContext): BigDecimal {
         val divrem = this.divideAndRemainder(divisor, mc)
         return divrem[1]
@@ -1820,6 +1844,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @see .remainder
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun divideAndRemainder(divisor: BigDecimal): Array<BigDecimal> {
         // we use the identity  x = i * y + r to determine r
         val result0 = this.divideToIntegralValue(divisor)
@@ -1854,6 +1879,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @see .remainder
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun divideAndRemainder(divisor: BigDecimal, mc: MathContext): Array<BigDecimal> {
         if (mc.precision == 0) return divideAndRemainder(divisor)
         val lhs: BigDecimal = this
@@ -1879,6 +1905,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @throws ArithmeticException if `n` is out of range.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun pow(n: Int): BigDecimal {
         if (n < 0 || n > 999999999) throw ArithmeticException("Invalid operation")
         // No need to calculate pow(n) if result will over/underflow.
@@ -1938,6 +1965,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * of range.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun pow(n: Int, mc: MathContext): BigDecimal {
         if (mc.precision == 0) return pow(n)
         if (n < -999999999 || n > 999999999) throw ArithmeticException("Invalid operation")
@@ -1997,6 +2025,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * rounding mode is `UNNECESSARY`.
      * @since 1.5
      */
+    @ExperimentalStdlibApi
     fun abs(mc: MathContext): BigDecimal {
         return if (signum() < 0) negate(mc) else plus(mc)
     }
@@ -2025,6 +2054,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * rounding mode is `UNNECESSARY`.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun negate(mc: MathContext): BigDecimal {
         return negate().plus(mc)
     }
@@ -2060,6 +2090,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @see .round
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     operator fun plus(mc: MathContext): BigDecimal {
         return if (mc.precision == 0) this else doRound(this, mc)
     }
@@ -2098,6 +2129,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @return the precision of this `BigDecimal`.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun precision(): Int {
         var result = precision
         if (result == 0) {
@@ -2139,6 +2171,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @see .plus
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun round(mc: MathContext): BigDecimal {
         return plus(mc)
     }
@@ -2174,6 +2207,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      *
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun setScale(newScale: Int, roundingMode: RoundingMode): BigDecimal {
         return setScale(newScale, roundingMode.oldMode)
     }
@@ -2227,6 +2261,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      *
      * @see .ROUND_UNNECESSARY
      */
+    @ExperimentalStdlibApi
     fun setScale(newScale: Int, roundingMode: Int): BigDecimal {
         if (roundingMode < ROUND_UP || roundingMode > ROUND_UNNECESSARY)
             throw IllegalArgumentException("Invalid rounding mode")
@@ -2340,6 +2375,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @see .setScale
      * @see .setScale
      */
+    @ExperimentalStdlibApi
     fun setScale(newScale: Int): BigDecimal {
         return setScale(newScale, ROUND_UNNECESSARY)
     }
@@ -2359,6 +2395,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * decimal point moved `n` places to the left.
      * @throws ArithmeticException if scale overflows.
      */
+    @ExperimentalStdlibApi
     fun movePointLeft(n: Int): BigDecimal {
         // Cannot use movePointRight(-n) in case of n==Integer.MIN_VALUE
         val newScale = checkScale(scale.toLong() + n)
@@ -2381,6 +2418,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * with the decimal point moved `n` places to the right.
      * @throws ArithmeticException if scale overflows.
      */
+    @ExperimentalStdlibApi
     fun movePointRight(n: Int): BigDecimal {
         // Cannot use movePointLeft(-n) in case of n==Integer.MIN_VALUE
         val newScale = checkScale(scale.toLong() - n)
@@ -2423,6 +2461,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * trailing zeros removed.
      * @since 1.5
      */
+    @ExperimentalStdlibApi
     fun stripTrailingZeros(): BigDecimal {
         return if (intCompact == 0L || intVal != null && intVal.signum == 0) {
             ZERO
@@ -2458,6 +2497,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @return -1, 0, or 1 as this `BigDecimal` is numerically
      * less than, equal to, or greater than `val`.
      */
+    @ExperimentalStdlibApi
     override fun compareTo(other: BigDecimal): Int {
         // Quick path for equal scale and non-inflated case.
         if (scale == other.scale) {
@@ -2476,6 +2516,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
     /**
      * Version of compareTo that ignores sign.
      */
+    @ExperimentalStdlibApi
     private fun compareMagnitude(`val`: BigDecimal): Int {
         // Match scales, avoid unnecessary inflation
         var ys: Long = `val`.intCompact
@@ -2566,6 +2607,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * method, `this` is returned.
      * @see .compareTo
      */
+    @ExperimentalStdlibApi
     fun min(`val`: BigDecimal): BigDecimal {
         return if (compareTo(`val`) <= 0) this else `val`
     }
@@ -2580,6 +2622,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * method, `this` is returned.
      * @see .compareTo
      */
+    @ExperimentalStdlibApi
     fun max(`val`: BigDecimal): BigDecimal {
         return if (compareTo(`val`) >= 0) this else `val`
     }
@@ -2708,6 +2751,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      *
      * @see .BigDecimal
      */
+    @ExperimentalStdlibApi
     override fun toString(): String {
         var sc = stringCache
         if (sc == null) {
@@ -2741,6 +2785,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * engineering notation if an exponent is needed.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun toEngineeringString(): String {
         return layoutChars(false)
     }
@@ -2778,6 +2823,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @see .toString
      * @see .toEngineeringString
      */
+    @ExperimentalStdlibApi
     fun toPlainString(): String {
         if (scale == 0) {
             return if (intCompact != INFLATED) {
@@ -2813,6 +2859,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
     }
 
     /* Returns a digit.digit string */
+    @ExperimentalStdlibApi
     private fun getValueString(signum: Int, intString: String, scale: Int): String {
         /* Insert decimal point */
         val buf: StringBuilder
@@ -2850,6 +2897,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      *
      * @return this `BigDecimal` converted to a `BigInteger`.
      */
+    @ExperimentalStdlibApi
     fun toBigInteger(): BigInteger {
         // force to an integer, quietly
         return this.setScale(0, ROUND_DOWN).inflated()
@@ -2865,19 +2913,23 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * fractional part.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun toBigIntegerExact(): BigInteger {
         // round to an integer, with Exception if decimal part non-0
         return this.setScale(0, ROUND_UNNECESSARY).inflated()
     }
 
+    @ExperimentalStdlibApi
     override fun toByte(): Byte {
         return toByteExact()
     }
 
+    @ExperimentalStdlibApi
     override fun toChar(): Char {
         return toShortExact().toChar()
     }
 
+    @ExperimentalStdlibApi
     override fun toShort(): Short {
         return toShortExact()
     }
@@ -2898,6 +2950,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      *
      * @return this `BigDecimal` converted to a `long`.
      */
+    @ExperimentalStdlibApi
     override fun toLong(): Long {
         return if (intCompact != INFLATED && scale == 0) {
             intCompact
@@ -2922,6 +2975,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * Return true if a nonzero BigDecimal has an absolute value less
      * than one; i.e. only has fraction digits.
      */
+    @ExperimentalStdlibApi
     private fun fractionOnly(): Boolean {
         assert(signum() != 0)
         return this.precision() - scale <= 0
@@ -2939,6 +2993,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * fractional part, or will not fit in a `long`.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun toLongExact(): Long {
         if (intCompact != INFLATED && scale == 0) return intCompact
 
@@ -2989,6 +3044,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      *
      * @return this `BigDecimal` converted to an `int`.
      */
+    @ExperimentalStdlibApi
     override fun toInt(): Int {
         return if (intCompact != INFLATED && scale == 0) intCompact.toInt() else toLong().toInt()
     }
@@ -3005,6 +3061,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * fractional part, or will not fit in an `int`.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun toIntExact(): Int {
         val num = toLongExact() // will check decimal part
         if (num.toInt().toLong () != num) throw ArithmeticException("Overflow")
@@ -3023,6 +3080,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * fractional part, or will not fit in a `short`.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun toShortExact(): Short {
         val num = toLongExact() // will check decimal part
         if (num.toShort().toLong() != num) throw ArithmeticException("Overflow")
@@ -3041,6 +3099,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * fractional part, or will not fit in a `byte`.
      * @since  1.5
      */
+    @ExperimentalStdlibApi
     fun toByteExact(): Byte {
         val num = toLongExact() // will check decimal part
         if (num.toByte().toLong() != num) throw ArithmeticException("Overflow")
@@ -3062,6 +3121,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      *
      * @return this `BigDecimal` converted to a `float`.
      */
+    @ExperimentalStdlibApi
     override fun toFloat(): Float {
         if (intCompact != INFLATED) {
             if (scale == 0) {
@@ -3104,6 +3164,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      *
      * @return this `BigDecimal` converted to a `double`.
      */
+    @ExperimentalStdlibApi
     override fun toDouble(): Double {
         if (intCompact != INFLATED) {
             if (scale == 0) {
@@ -3161,6 +3222,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
         val compactCharArray = CharArray(19)// character array to place the intCompact
 
         // Accessors.
+        @ExperimentalStdlibApi
         val stringBuilder: StringBuilder
             get() {
                 sb.setLength(0)
@@ -3250,6 +3312,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * @return string with canonical string representation of this
      * `BigDecimal`
      */
+    @ExperimentalStdlibApi
     private fun layoutChars(sci: Boolean): String {
         if (scale == 0) // zero scale is trivial
             return if (intCompact != INFLATED) intCompact.toString() else intVal.toString()
@@ -3347,6 +3410,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * Compute this * 10 ^ n.
      * Needed mainly to allow special casing to trap zero value
      */
+    @ExperimentalStdlibApi
     private fun bigMultiplyPowerTen(n: Int): BigInteger {
         if (n <= 0) return inflated()
         return if (intCompact != INFLATED) bigTenToThe(n)
@@ -3403,6 +3467,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * Note: Since this is an audit method, we are not supposed to change the
      * state of this BigDecimal object.
      */
+    @ExperimentalStdlibApi
     private fun audit(): BigDecimal {
         if (intCompact == INFLATED) {
             if (intVal == null) {
@@ -3642,6 +3707,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * @throws NumberFormatException if `val` is infinite or NaN.
          * @since  1.5
          */
+        @ExperimentalStdlibApi
         fun valueOf(`val`: Double): BigDecimal {
             // Reminder: a zero double returns '0.0', so we cannot fastpath
             // to use the constant ZERO.  This might be important enough to
@@ -3745,6 +3811,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * @param  n the power of ten to be returned (>=0)
          * @return a `BigInteger` with the value (10<sup>n</sup>)
          */
+        @ExperimentalStdlibApi
         private fun bigTenToThe(n: Int): BigInteger {
             if (n < 0) return BigInteger.ZERO
             if (n < BIG_TEN_POWERS_TABLE_MAX) {
@@ -3764,6 +3831,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * in the meantime, the BIG_TEN_POWERS_TABLE array gets
          * expanded to the size greater than n.
          */
+        @ExperimentalStdlibApi
         private fun expandBigIntegerTenPowers(n: Int): BigInteger {
 //            synchronized(BigDecimal::class) { // FIXME
                 var pows: Array<BigInteger> = BIG_TEN_POWERS_TABLE
@@ -3883,6 +3951,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * @param  val array of two elements referring to the two
          * `BigDecimal`s to be aligned.
          */
+        @ExperimentalStdlibApi
         private fun matchScale(`val`: Array<BigDecimal>) {
             if (`val`[0].scale == `val`[1].scale) {
                 return
@@ -3902,6 +3971,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * @param x the `long`
          * @return the length of the unscaled value, in deciaml digits.
          */
+        @ExperimentalStdlibApi
         fun longDigitLength(x: Long): Int {
             /*
          * As described in "Bit Twiddling Hacks" by Sean Anderson,
@@ -3934,6 +4004,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * @param b the BigInteger
          * @return the length of the unscaled value, in decimal digits
          */
+        @ExperimentalStdlibApi
         private fun bigDigitLength(b: BigInteger): Int {
             /*
          * Same idea as the long version, but we need a better
@@ -4025,6 +4096,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * `RoundingMode.UNNECESSARY` and the
          * result is inexact.
          */
+        @ExperimentalStdlibApi
         private fun doRound(`val`: BigDecimal, mc: MathContext): BigDecimal {
             val mcp: Int = mc.precision
             var wasDivided = false
@@ -4074,6 +4146,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * Returns a {@code BigDecimal} created from {@code long} value with
      * given scale rounded according to the MathContext settings
      */
+        @ExperimentalStdlibApi
         private fun doRound(compactVal: Long, scale: Int, mc: MathContext): BigDecimal {
             var compactVal = compactVal
             var scale = scale
@@ -4100,6 +4173,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * Returns a {@code BigDecimal} created from {@code BigInteger} value with
      * given scale rounded according to the MathContext settings
      */
+        @ExperimentalStdlibApi
         private fun doRound(intVal: BigInteger, scale: Int, mc: MathContext): BigDecimal {
             var intVal: BigInteger? = intVal
             var scale = scale
@@ -4145,6 +4219,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
         /*
      * Divides {@code BigInteger} value by ten power.
      */
+        @ExperimentalStdlibApi
         private fun divideAndRoundByTenPow(
             intVal: BigInteger,
             tenPow: Int,
@@ -4277,6 +4352,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * Divides `BigInteger` value by `long` value and
          * do rounding based on the passed in roundingMode.
          */
+        @ExperimentalStdlibApi
         private fun divideAndRound(
             bdividend: BigInteger,
             ldivisor: Long,
@@ -4284,8 +4360,8 @@ class BigDecimal : Number, Comparable<BigDecimal> {
         ): BigInteger {
             val isRemainderZero: Boolean // record remainder is zero or not
             val qsign: Int // quotient sign
-            var r: Long // store quotient & remainder in long
-            var mq: MutableBigInteger? // store quotient
+            val r: Long // store quotient & remainder in long
+            val mq: MutableBigInteger? // store quotient
             // Descend into mutables for faster remainder checks
             val mdividend = MutableBigInteger(bdividend.mag)
             mq = MutableBigInteger()
@@ -4309,14 +4385,15 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * the last parameter, i.e. preferredScale is NOT equal to scale, the
          * trailing zeros of the result is stripped to match the preferredScale.
          */
+        @ExperimentalStdlibApi
         private fun divideAndRound(
             bdividend: BigInteger,
             ldivisor: Long, scale: Int, roundingMode: Int, preferredScale: Int
         ): BigDecimal {
             val isRemainderZero: Boolean // record remainder is zero or not
             val qsign: Int // quotient sign
-            var r: Long // store quotient & remainder in long
-            var mq: MutableBigInteger? // store quotient
+            val r: Long // store quotient & remainder in long
+            val mq: MutableBigInteger? // store quotient
             // Descend into mutables for faster remainder checks
             val mdividend = MutableBigInteger(bdividend.mag)
             mq = MutableBigInteger()
@@ -4372,6 +4449,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * Divides `BigInteger` value by `BigInteger` value and
          * do rounding based on the passed in roundingMode.
          */
+        @ExperimentalStdlibApi
         private fun divideAndRound(
             bdividend: BigInteger,
             bdivisor: BigInteger,
@@ -4404,6 +4482,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * the last parameter, i.e. preferredScale is NOT equal to scale, the
          * trailing zeros of the result is stripped to match the preferredScale.
          */
+        @ExperimentalStdlibApi
         private fun divideAndRound(
             bdividend: BigInteger, bdivisor: BigInteger, scale: Int, roundingMode: Int,
             preferredScale: Int
@@ -4466,6 +4545,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * @return new `BigDecimal` with a scale possibly reduced
          * to be closed to the preferred scale.
          */
+        @ExperimentalStdlibApi
         private fun createAndStripZerosToMatchScale(
             intVal: BigInteger,
             scale: Int,
@@ -4512,6 +4592,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             return valueOf(compactVal, scale)
         }
 
+        @ExperimentalStdlibApi
         private fun stripZerosToMatchScale(
             intVal: BigInteger?,
             intCompact: Long,
@@ -4552,6 +4633,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             ) else BigDecimal(BigInteger.valueOf(xs).add(ys), scale)
         }
 
+        @ExperimentalStdlibApi
         private fun add(xs: Long, scale1: Int, ys: Long, scale2: Int): BigDecimal {
             val sdiff = scale1.toLong() - scale2
             return if (sdiff == 0L) {
@@ -4590,6 +4672,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             }
         }
 
+        @ExperimentalStdlibApi
         private fun add(xs: Long, scale1: Int, snd: BigInteger, scale2: Int): BigDecimal {
             var snd: BigInteger = snd
             var rscale = scale1
@@ -4618,6 +4701,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             ) else valueOf(sum, rscale, 0)
         }
 
+        @ExperimentalStdlibApi
         private fun add(
             fst: BigInteger,
             scale1: Int,
@@ -4647,11 +4731,13 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             ) else valueOf(sum, rscale, 0)
         }
 
+        @ExperimentalStdlibApi
         private fun bigMultiplyPowerTen(value: Long, n: Int): BigInteger {
             return if (n <= 0) BigInteger.valueOf(value) else bigTenToThe(n)
                 .multiply(value)
         }
 
+        @ExperimentalStdlibApi
         private fun bigMultiplyPowerTen(value: BigInteger, n: Int): BigInteger {
             if (n <= 0) return value
             return if (n < LONG_TEN_POWERS_TABLE.size) {
@@ -4666,6 +4752,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * Fast path - used only when (xscale <= yscale && yscale < 18
          * && mc.presision<18) {
          */
+        @ExperimentalStdlibApi
         private fun divideSmallFastPath(
             xs: Long, xscale: Int,
             ys: Long, yscale: Int,
@@ -4809,6 +4896,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * Returns a `BigDecimal` whose value is `(xs /
          * ys)`, with rounding according to the context settings.
          */
+        @ExperimentalStdlibApi
         private fun divide(
             xs: Long,
             xscale: Int,
@@ -4901,6 +4989,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * Returns a `BigDecimal` whose value is `(xs /
          * ys)`, with rounding according to the context settings.
          */
+        @ExperimentalStdlibApi
         private fun divide(
             xs: BigInteger,
             xscale: Int,
@@ -4982,6 +5071,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * Returns a `BigDecimal` whose value is `(xs /
          * ys)`, with rounding according to the context settings.
          */
+        @ExperimentalStdlibApi
         private fun divide(
             xs: Long,
             xscale: Int,
@@ -5039,6 +5129,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * Returns a `BigDecimal` whose value is `(xs /
          * ys)`, with rounding according to the context settings.
          */
+        @ExperimentalStdlibApi
         private fun divide(
             xs: BigInteger,
             xscale: Int,
@@ -5096,6 +5187,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * performs divideAndRound for (dividend0*dividend1, divisor)
      * returns null if quotient can't fit into long value;
      */
+        @ExperimentalStdlibApi
         private fun multiplyDivideAndRound(
             dividend0: Long, dividend1: Long, divisor: Long, scale: Int, roundingMode: Int,
             preferredScale: Int
@@ -5148,6 +5240,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * returns null if quotient can't fit into long value;
          * Specialized version of Knuth's division
          */
+        @ExperimentalStdlibApi
         private fun divideAndRound128(
             dividendHi: Long, dividendLo: Long, divisor: Long, sign: Int,
             scale: Int, roundingMode: Int, preferredScale: Int
@@ -5264,6 +5357,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
      * calculate divideAndRound for ldividend*10^raise / divisor
      * when abs(dividend)==abs(divisor);
      */
+        @ExperimentalStdlibApi
         private fun roundedTenPower(qsign: Int, raise: Int, scale: Int, preferredScale: Int): BigDecimal {
             return if (scale > preferredScale) {
                 val diff = scale - preferredScale
@@ -5277,6 +5371,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             }
         }
 
+        @ExperimentalStdlibApi
         fun scaledTenPow(n: Int, sign: Int, scale: Int): BigDecimal {
             return if (n < LONG_TEN_POWERS_TABLE.size) valueOf(
                 sign * LONG_TEN_POWERS_TABLE.get(n),
@@ -5361,6 +5456,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
         }
 
         // Compare Normalize dividend & divisor so that both fall into [0.1, 0.999...]
+        @ExperimentalStdlibApi
         private fun compareMagnitudeNormalized(xs: Long, xscale: Int, ys: BigInteger, yscale: Int): Int {
             // assert "ys can't be represented.toLong()"
             if (xs == 0L) return -1
@@ -5378,6 +5474,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
         }
 
         // Compare Normalize dividend & divisor so that both fall into [0.1, 0.999...]
+        @ExperimentalStdlibApi
         private fun compareMagnitudeNormalized(
             xs: BigInteger,
             xscale: Int,
@@ -5401,6 +5498,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             } else INFLATED
         }
 
+        @ExperimentalStdlibApi
         private fun multiply(x: Long, y: Long, scale: Int): BigDecimal {
             val product: Long = multiply(x, y)
             return if (product != INFLATED) {
@@ -5413,12 +5511,14 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             )
         }
 
+        @ExperimentalStdlibApi
         private fun multiply(x: Long, y: BigInteger, scale: Int): BigDecimal {
             return if (x == 0L) {
                 zeroValueOf(scale)
             } else BigDecimal(y.multiply(x), INFLATED, scale, 0)
         }
 
+        @ExperimentalStdlibApi
         private fun multiply(x: BigInteger, y: BigInteger, scale: Int): BigDecimal {
             return BigDecimal(x.multiply(y), INFLATED, scale, 0)
         }
@@ -5426,6 +5526,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
         /**
          * Multiplies two long values and rounds according `MathContext`
          */
+        @ExperimentalStdlibApi
         private fun multiplyAndRound(x: Long, y: Long, scale: Int, mc: MathContext): BigDecimal {
             var x = x
             var y = y
@@ -5477,6 +5578,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             return doRound(res, mc)
         }
 
+        @ExperimentalStdlibApi
         private fun multiplyAndRound(
             x: Long,
             y: BigInteger,
@@ -5488,6 +5590,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             } else doRound(y.multiply(x), scale, mc)
         }
 
+        @ExperimentalStdlibApi
         private fun multiplyAndRound(
             x: BigInteger,
             y: BigInteger,
@@ -5501,6 +5604,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
          * rounds 128-bit value according `MathContext`
          * returns null if result can't be repsented as compact BigDecimal.
          */
+        @ExperimentalStdlibApi
         private fun doRound128(hi: Long, lo: Long, sign: Int, scale: Int, mc: MathContext): BigDecimal? {
             var scale = scale
             val mcp: Int = mc.precision
@@ -5551,6 +5655,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
         /*
      * returns precision of 128-bit value
      */
+        @ExperimentalStdlibApi
         private fun precision(hi: Long, lo: Long): Int {
             if (hi == 0L) {
                 if (lo >= 0) {
@@ -5584,6 +5689,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             } else lo0 + Long.MIN_VALUE < lo1 + Long.MIN_VALUE
         }
 
+        @ExperimentalStdlibApi
         private fun divide(
             dividend: Long,
             dividendScale: Int,
@@ -5650,6 +5756,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             }
         }
 
+        @ExperimentalStdlibApi
         private fun divide(
             dividend: BigInteger,
             dividendScale: Int,
@@ -5697,6 +5804,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             }
         }
 
+        @ExperimentalStdlibApi
         private fun divide(
             dividend: Long,
             dividendScale: Int,
@@ -5736,6 +5844,7 @@ class BigDecimal : Number, Comparable<BigDecimal> {
             }
         }
 
+        @ExperimentalStdlibApi
         private fun divide(
             dividend: BigInteger,
             dividendScale: Int,

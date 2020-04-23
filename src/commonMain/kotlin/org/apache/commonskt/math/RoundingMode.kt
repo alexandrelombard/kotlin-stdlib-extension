@@ -95,8 +95,6 @@ import org.apache.commonskt.PublicApi
  * @since 1.5
  */
 @PublicApi
-@ExperimentalUnsignedTypes
-@ExperimentalStdlibApi
 enum class RoundingMode
 /**
  * Constructor

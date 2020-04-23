@@ -43,8 +43,6 @@ package org.apache.commonskt.math
  * @author  Michael McCloskey
  * @since   1.3
  */
-@ExperimentalUnsignedTypes
-@ExperimentalStdlibApi
 internal class SignedMutableBigInteger : MutableBigInteger {
     /**
      * The sign of this MutableBigInteger.
@@ -102,6 +100,7 @@ internal class SignedMutableBigInteger : MutableBigInteger {
      * Print out the first intLen ints of this MutableBigInteger's value
      * array starting at offset.
      */
+    @ExperimentalStdlibApi
     override fun toString(): String {
         return this.toBigInteger(sign).toString()
     }

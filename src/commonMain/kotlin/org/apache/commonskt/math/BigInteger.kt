@@ -126,8 +126,6 @@ import kotlin.random.Random
  * @since JDK1.1
  */
 @Suppress("NAME_SHADOWING")
-@ExperimentalUnsignedTypes
-@ExperimentalStdlibApi
 @PublicApi
 class BigInteger : Number, Comparable<BigInteger> {
     /**
@@ -195,6 +193,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @see .getLowestSetBit
      *
      */
+    @ExperimentalStdlibApi
     @Deprecated(
         """Deprecated since logical value is offset from stored
       value and correction factor is applied in accessor method."""
@@ -609,6 +608,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @throws ArithmeticException `bitLength < 2` or `bitLength` is too large.
      * @see .bitLength
      */
+    @ExperimentalStdlibApi
     constructor(bitLength: Int, certainty: Int, rnd: Random) {
         val prime: BigInteger
         if (bitLength < 2) throw ArithmeticException("bitLength < 2")
@@ -634,6 +634,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @throws ArithmeticException `this < 0` or `this` is too large.
      * @since 1.5
      */
+    @ExperimentalStdlibApi
     fun nextProbablePrime(): BigInteger {
         if (signum < 0) throw ArithmeticException("start < 0: $this")
 
@@ -698,6 +699,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @return `true` if this BigInteger is probably prime,
      * `false` if it's definitely composite.
      */
+    @ExperimentalStdlibApi
     fun primeToCertainty(certainty: Int, random: Random?): Boolean {
         var rounds: Int
         val n: Int = (min(certainty, Int.MAX_VALUE - 1) + 1) / 2
@@ -728,6 +730,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * The following assumptions are made:
      * This BigInteger is a positive, odd number.
      */
+    @ExperimentalStdlibApi
     private fun passesLucasLehmer(): Boolean {
         val thisPlusOne: BigInteger = this.add(ONE)
 
@@ -754,6 +757,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * This BigInteger is a positive, odd number greater than 2.
      * iterations<=50.
      */
+    @ExperimentalStdlibApi
     private fun passesMillerRabin(iterations: Int, rnd: Random?): Boolean {
         // Find a and m such that m is odd and this == 1 + 2**a * m
         val rnd: Random = rnd ?: Random.Default
@@ -1001,6 +1005,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          * @see .bitLength
          * @since 1.4
          */
+        @ExperimentalStdlibApi
         fun probablePrime(bitLength: Int, rnd: Random): BigInteger {
             if (bitLength < 2) throw ArithmeticException("bitLength < 2")
             return if (bitLength < SMALL_PRIME_THRESHOLD) smallPrime(
@@ -1021,6 +1026,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          *
          * This method assumes bitLength > 1.
          */
+        @ExperimentalStdlibApi
         private fun smallPrime(bitLength: Int, certainty: Int, rnd: Random): BigInteger {
             val magLen = bitLength + 31 ushr 5
             val temp = IntArray(magLen)
@@ -1059,6 +1065,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          * a sieve to eliminate most composites before using a more expensive
          * test.
          */
+        @ExperimentalStdlibApi
         private fun largePrime(bitLength: Int, certainty: Int, rnd: Random): BigInteger {
             var p: BigInteger
             p = BigInteger(bitLength, rnd).setBit(bitLength - 1)
@@ -1089,6 +1096,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          * Computes Jacobi(p,n).
          * Assumes n positive, odd, n>=3.
          */
+        @ExperimentalStdlibApi
         private fun jacobiSymbol(p: Int, n: BigInteger): Int {
             var p = p
             if (p == 0) return 0
@@ -1137,6 +1145,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             return 0
         }
 
+        @ExperimentalStdlibApi
         private fun lucasLehmerSequence(
             z: Int,
             k: BigInteger,
@@ -1456,6 +1465,7 @@ class BigInteger : Number, Comparable<BigInteger> {
             return result
         }
 
+        @ExperimentalStdlibApi
         private fun multiplyByInt(x: IntArray, y: Int, sign: Int): BigInteger {
             if (y.countOneBits() == 1) {
                 return BigInteger(
@@ -1564,6 +1574,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          *
          * See:  http://en.wikipedia.org/wiki/Karatsuba_algorithm
          */
+        @ExperimentalStdlibApi
         private fun multiplyKaratsuba(x: BigInteger, y: BigInteger): BigInteger {
             val xlen: Int = x.mag.size
             val ylen: Int = y.mag.size
@@ -1621,6 +1632,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          * LNCS #4547. Springer, Madrid, Spain, June 21-22, 2007.
          *
          */
+        @ExperimentalStdlibApi
         private fun multiplyToomCook3(a: BigInteger, b: BigInteger): BigInteger {
             val alen: Int = a.mag.size
             val blen: Int = b.mag.size
@@ -1811,6 +1823,7 @@ class BigInteger : Number, Comparable<BigInteger> {
         /**
          * Package private method to return bit length for an integer.
          */
+        @ExperimentalStdlibApi
         fun bitLengthForInt(n: Int): Int {
             return 32 - n.countLeadingZeroBits()
         }
@@ -1819,6 +1832,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          * Left shift int array a up to len by n bits. Returns the array that
          * results from the shift since space may have to be reallocated.
          */
+        @ExperimentalStdlibApi
         private fun leftShift(a: IntArray, len: Int, n: Int): IntArray {
             val nInts = n ushr 5
             val nBits = n and 0x1F
@@ -1877,6 +1891,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          * Calculate bitlength of contents of the first len elements an int array,
          * assuming there are no leading zero ints.
          */
+        @ExperimentalStdlibApi
         private fun bitLength(`val`: IntArray, len: Int): Int {
             return if (len == 0) 0 else (len - 1 shl 5) + bitLengthForInt(`val`[0])
         }
@@ -2167,6 +2182,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          * @param radix  The base to convert to.
          * @param digits The minimum number of digits to pad to.
          */
+        @ExperimentalStdlibApi
         private fun toString(
             u: BigInteger, sb: StringBuilder, radix: Int,
             digits: Int
@@ -2211,6 +2227,7 @@ class BigInteger : Number, Comparable<BigInteger> {
          * This could be changed to a more complicated caching method using
          * `Future`.
          */
+        @ExperimentalStdlibApi
         private fun getRadixConversionCache(radix: Int, exponent: Int): BigInteger {
             var cacheLine = powerCache[radix] // volatile read
             if (exponent < cacheLine.size) {
@@ -2557,6 +2574,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @param  val value to be multiplied by this BigInteger.
      * @return `this * val`
      */
+    @ExperimentalStdlibApi
     fun multiply(`val`: BigInteger): BigInteger {
         return multiply(`val`, false)
     }
@@ -2569,6 +2587,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @param  isRecursion whether this is a recursive invocation
      * @return `this * val`
      */
+    @ExperimentalStdlibApi
     private fun multiply(`val`: BigInteger, isRecursion: Boolean): BigInteger {
         if (`val`.signum == 0 || signum == 0) return ZERO
         val xlen = mag.size
@@ -2660,6 +2679,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * Package private methods used by BigDecimal code to multiply a BigInteger
      * with a long. Assumes v is not equal to INFLATED.
      */
+    @ExperimentalStdlibApi
     fun multiply(v: Long): BigInteger {
         var v = v
         if (v == 0L || signum == 0) return ZERO
@@ -2825,6 +2845,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @param isRecursion whether this is a recursive invocation
      * @return `this<sup>2</sup>`
      */
+    @ExperimentalStdlibApi
     private fun square(isRecursion: Boolean = false): BigInteger {
         if (signum == 0) {
             return ZERO
@@ -2861,6 +2882,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * has better asymptotic performance than the algorithm used in
      * squareToLen.
      */
+    @ExperimentalStdlibApi
     private fun squareKaratsuba(): BigInteger {
         val half = (mag.size + 1) / 2
         val xl: BigInteger = getLower(half)
@@ -2879,6 +2901,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * that has better asymptotic performance than the algorithm used in
      * squareToLen or squareKaratsuba.
      */
+    @ExperimentalStdlibApi
     private fun squareToomCook3(): BigInteger {
         val len = mag.size
 
@@ -2939,6 +2962,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @return `this / val`
      * @throws ArithmeticException if `val` is zero.
      */
+    @ExperimentalStdlibApi
     fun divide(`val`: BigInteger): BigInteger {
         return if (`val`.mag.size < BURNIKEL_ZIEGLER_THRESHOLD ||
             mag.size - `val`.mag.size < BURNIKEL_ZIEGLER_OFFSET
@@ -2957,6 +2981,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @throws ArithmeticException if `val` is zero.
      * @see MutableBigInteger.divideKnuth
      */
+    @ExperimentalStdlibApi
     private fun divideKnuth(`val`: BigInteger): BigInteger {
         val q = MutableBigInteger()
         val a = MutableBigInteger(mag)
@@ -2976,6 +3001,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * is the final element.
      * @throws ArithmeticException if `val` is zero.
      */
+    @ExperimentalStdlibApi
     fun divideAndRemainder(`val`: BigInteger): Array<BigInteger> {
         return if (`val`.mag.size < BURNIKEL_ZIEGLER_THRESHOLD ||
             mag.size - `val`.mag.size < BURNIKEL_ZIEGLER_OFFSET
@@ -2987,6 +3013,7 @@ class BigInteger : Number, Comparable<BigInteger> {
     }
 
     /** Long division  */
+    @ExperimentalStdlibApi
     private fun divideAndRemainderKnuth(`val`: BigInteger): Array<BigInteger> {
         val q = MutableBigInteger()
         val a = MutableBigInteger(mag)
@@ -3005,6 +3032,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @return `this % val`
      * @throws ArithmeticException if `val` is zero.
      */
+    @ExperimentalStdlibApi
     fun remainder(`val`: BigInteger): BigInteger {
         return if (`val`.mag.size < BURNIKEL_ZIEGLER_THRESHOLD ||
             mag.size - `val`.mag.size < BURNIKEL_ZIEGLER_OFFSET
@@ -3016,6 +3044,7 @@ class BigInteger : Number, Comparable<BigInteger> {
     }
 
     /** Long division  */
+    @ExperimentalStdlibApi
     private fun remainderKnuth(`val`: BigInteger): BigInteger {
         val q = MutableBigInteger()
         val a = MutableBigInteger(mag)
@@ -3028,6 +3057,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @param  val the divisor
      * @return `this / val`
      */
+    @ExperimentalStdlibApi
     private fun divideBurnikelZiegler(`val`: BigInteger): BigInteger {
         return divideAndRemainderBurnikelZiegler(`val`)[0]
     }
@@ -3037,6 +3067,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @param val the divisor
      * @return `this % val`
      */
+    @ExperimentalStdlibApi
     private fun remainderBurnikelZiegler(`val`: BigInteger): BigInteger {
         return divideAndRemainderBurnikelZiegler(`val`)[1]
     }
@@ -3047,6 +3078,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @param val the divisor
      * @return an array containing the quotient and remainder
      */
+    @ExperimentalStdlibApi
     private fun divideAndRemainderBurnikelZiegler(`val`: BigInteger): Array<BigInteger> {
         val q = MutableBigInteger()
         val r: MutableBigInteger =
@@ -3067,6 +3099,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @throws ArithmeticException `exponent` is negative.  (This would
      * cause the operation to yield a non-integer value.)
      */
+    @ExperimentalStdlibApi
     fun pow(exponent: Int): BigInteger {
         if (exponent < 0) {
             throw ArithmeticException("Negative exponent")
@@ -3193,6 +3226,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * `sqrt(-1)`.)
      * @since  9
      */
+    @ExperimentalStdlibApi
     fun sqrt(): BigInteger {
         if (signum < 0) {
             throw ArithmeticException("Negative BigInteger")
@@ -3215,6 +3249,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @see .sqrt
      * @since  9
      */
+    @ExperimentalStdlibApi
     fun sqrtAndRemainder(): Array<BigInteger> {
         val s = sqrt()
         val r = this.subtract(s.square())
@@ -3230,6 +3265,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @param  val value with which the GCD is to be computed.
      * @return `GCD(abs(this), abs(val))`
      */
+    @ExperimentalStdlibApi
     fun gcd(`val`: BigInteger): BigInteger {
         if (`val`.signum == 0) return abs() else if (signum == 0) return `val`.abs()
         val a = MutableBigInteger(this)
@@ -3268,6 +3304,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @throws ArithmeticException `m`  0
      * @see .remainder
      */
+    @ExperimentalStdlibApi
     fun mod(m: BigInteger): BigInteger {
         if (m.signum <= 0) throw ArithmeticException("BigInteger: modulus not positive")
         val result: BigInteger = remainder(m)
@@ -3287,6 +3324,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * prime* to `m`.
      * @see .modInverse
      */
+    @ExperimentalStdlibApi
     fun modPow(exponent: BigInteger, m: BigInteger): BigInteger {
         var exponent: BigInteger = exponent
         if (m.signum <= 0) throw ArithmeticException("BigInteger: modulus not positive")
@@ -3349,6 +3387,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * Returns a BigInteger whose value is x to the power of y mod z.
      * Assumes: z is odd && x < z.
      */
+    @ExperimentalStdlibApi
     private fun oddModPow(y: BigInteger, z: BigInteger): BigInteger {
         /*
          * The algorithm is adapted from Colin Plumb's C library.
@@ -3572,6 +3611,7 @@ class BigInteger : Number, Comparable<BigInteger> {
     /**
      * Returns a BigInteger whose value is (this ** exponent) mod (2**p)
      */
+    @ExperimentalStdlibApi
     private fun modPow2(exponent: BigInteger, p: Int): BigInteger {
         /*
          * Perform exponentiation using repeated squaring trick, chopping off
@@ -3594,6 +3634,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * Returns a BigInteger whose value is this mod(2**p).
      * Assumes that this `BigInteger >= 0` and `p > 0`.
      */
+    @ExperimentalStdlibApi
     private fun mod2(p: Int): BigInteger {
         if (bitLength() <= p) return this
 
@@ -3617,6 +3658,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * has no multiplicative inverse mod m (that is, this BigInteger
      * is not *relatively prime* to m).
      */
+    @ExperimentalStdlibApi
     fun modInverse(m: BigInteger): BigInteger {
         if (m.signum != 1) throw ArithmeticException("BigInteger: modulus not positive")
         if (m == ONE) return ZERO
@@ -3747,6 +3789,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @param val value to be AND'ed with this BigInteger.
      * @return `this & val`
      */
+    @ExperimentalStdlibApi
     fun and(`val`: BigInteger): BigInteger {
         val result = IntArray(max(intLength(), `val`.intLength()))
         for (i in result.indices) result[i] = (getInt(result.size - i - 1)
@@ -3762,6 +3805,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @param val value to be OR'ed with this BigInteger.
      * @return `this | val`
      */
+    @ExperimentalStdlibApi
     fun or(`val`: BigInteger): BigInteger {
         val result = IntArray(max(intLength(), `val`.intLength()))
         for (i in result.indices) result[i] = (getInt(result.size - i - 1)
@@ -3777,6 +3821,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @param val value to be XOR'ed with this BigInteger.
      * @return `this ^ val`
      */
+    @ExperimentalStdlibApi
     fun xor(`val`: BigInteger): BigInteger {
         val result = IntArray(max(intLength(), `val`.intLength()))
         for (i in result.indices) result[i] = (getInt(result.size - i - 1)
@@ -3791,6 +3836,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @return `~this`
      */
+    @ExperimentalStdlibApi
     operator fun not(): BigInteger {
         val result = IntArray(intLength())
         for (i in result.indices) result[i] = getInt(result.size - i - 1).inv()
@@ -3807,6 +3853,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @param val value to be complemented and AND'ed with this BigInteger.
      * @return `this & ~val`
      */
+    @ExperimentalStdlibApi
     fun andNot(`val`: BigInteger): BigInteger {
         val result = IntArray(max(intLength(), `val`.intLength()))
         for (i in result.indices) result[i] = (getInt(result.size - i - 1)
@@ -3835,6 +3882,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @return `this | (1<<n)`
      * @throws ArithmeticException `n` is negative.
      */
+    @ExperimentalStdlibApi
     fun setBit(n: Int): BigInteger {
         if (n < 0) throw ArithmeticException("Negative bit address")
         val intNum = n ushr 5
@@ -3853,6 +3901,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @return `this & ~(1<<n)`
      * @throws ArithmeticException `n` is negative.
      */
+    @ExperimentalStdlibApi
     fun clearBit(n: Int): BigInteger {
         if (n < 0) throw ArithmeticException("Negative bit address")
         val intNum = n ushr 5
@@ -3871,6 +3920,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @return `this ^ (1<<n)`
      * @throws ArithmeticException `n` is negative.
      */
+    @ExperimentalStdlibApi
     fun flipBit(n: Int): BigInteger {
         if (n < 0) throw ArithmeticException("Negative bit address")
         val intNum = n ushr 5
@@ -3891,6 +3941,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @return number of bits in the minimal two's-complement
      * representation of this BigInteger, *excluding* a sign bit.
      */
+    @ExperimentalStdlibApi
     fun bitLength(): Int {
         var n = bitLength - 1
         if (n == -1) { // bitLength not initialized yet
@@ -3927,6 +3978,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @return number of bits in the two's complement representation
      * of this BigInteger that differ from its sign bit.
      */
+    @ExperimentalStdlibApi
     fun bitCount(): Int {
         var bc = bitCount - 1
         if (bc == -1) {  // bitCount not initialized yet
@@ -3964,6 +4016,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * @return `true` if this BigInteger is probably prime,
      * `false` if it's definitely composite.
      */
+    @ExperimentalStdlibApi
     fun isProbablePrime(certainty: Int): Boolean {
         if (certainty <= 0) return true
         val w: BigInteger = abs()
@@ -4132,6 +4185,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @see .BigInteger
      */
+    @ExperimentalStdlibApi
     fun toString(radix: Int): String {
         var radix = radix
         if (signum == 0) return "0"
@@ -4151,6 +4205,7 @@ class BigInteger : Number, Comparable<BigInteger> {
     }
 
     /** This method is used to perform toString when arguments are small.  */
+    @ExperimentalStdlibApi
     private fun smallToString(radix: Int): String {
         if (signum == 0) {
             return "0"
@@ -4208,6 +4263,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @see .BigInteger
      */
+    @ExperimentalStdlibApi
     override fun toString(): String {
         return toString(10)
     }
@@ -4226,6 +4282,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * this BigInteger.
      * @see .BigInteger
      */
+    @ExperimentalStdlibApi
     fun toByteArray(): ByteArray {
         val byteLen = bitLength() / 8 + 1
         val byteArray = ByteArray(byteLen)
@@ -4247,15 +4304,18 @@ class BigInteger : Number, Comparable<BigInteger> {
         return byteArray
     }
 
+    @ExperimentalStdlibApi
     override fun toByte(): Byte {
         return toByteArray().last()
     }
 
+    @ExperimentalStdlibApi
     override fun toChar(): Char {
         val byteArray = toByteArray()
         return ((byteArray[byteArray.size - 2] shl 8) + byteArray[byteArray.size - 1]).toChar()
     }
 
+    @ExperimentalStdlibApi
     override fun toShort(): Short {
         val byteArray = toByteArray()
         return ((byteArray[byteArray.size - 2] shl 8) + byteArray[byteArray.size - 1]).toShort()
@@ -4318,6 +4378,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @return this BigInteger converted to a `float`.
      */
+    @ExperimentalStdlibApi
     override fun toFloat(): Float {
         if (signum == 0) {
             return 0.0f
@@ -4396,6 +4457,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @return this BigInteger converted to a `double`.
      */
+    @ExperimentalStdlibApi
     override fun toDouble(): Double {
         if (signum == 0) {
             return 0.0
@@ -4474,6 +4536,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      * Returns the length of the two's complement representation in ints,
      * including space for at least one sign bit.
      */
+    @ExperimentalStdlibApi
     private fun intLength(): Int {
         return (bitLength() ushr 5) + 1
     }
@@ -4527,6 +4590,7 @@ class BigInteger : Number, Comparable<BigInteger> {
     /**
      * Returns the mag array as an array of bytes.
      */
+    @ExperimentalStdlibApi
     private fun magSerializedForm(): ByteArray {
         val len = mag.size
         val bitLen =
@@ -4564,6 +4628,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @since  1.8
      */
+    @ExperimentalStdlibApi
     fun toLongExact(): Long {
         return if (mag.size <= 2 && bitLength() <= 63) toLong() else throw ArithmeticException("BigInteger out of long range")
     }
@@ -4581,6 +4646,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @since  1.8
      */
+    @ExperimentalStdlibApi
     fun toIntExact(): Int {
         return if (mag.size <= 1 && bitLength() <= 31) toInt() else throw ArithmeticException("BigInteger out of int range")
     }
@@ -4598,6 +4664,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @since  1.8
      */
+    @ExperimentalStdlibApi
     fun toShortExact(): Short {
         if (mag.size <= 1 && bitLength() <= 31) {
             val value = toInt()
@@ -4619,6 +4686,7 @@ class BigInteger : Number, Comparable<BigInteger> {
      *
      * @since  1.8
      */
+    @ExperimentalStdlibApi
     fun toByteExact(): Byte {
         if (mag.size <= 1 && bitLength() <= 31) {
             val value = toInt()
@@ -4637,12 +4705,15 @@ class BigInteger : Number, Comparable<BigInteger> {
     operator fun minus(b: BigInteger): BigInteger {
         return this.subtract(b)
     }
+    @ExperimentalStdlibApi
     operator fun times(b: BigInteger): BigInteger {
         return this.multiply(b)
     }
+    @ExperimentalStdlibApi
     operator fun div(b: BigInteger): BigInteger {
         return this.divide(b)
     }
+    @ExperimentalStdlibApi
     operator fun rem(b: BigInteger): BigInteger {
         return this.remainder(b)
     }

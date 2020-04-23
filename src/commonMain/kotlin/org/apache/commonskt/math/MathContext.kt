@@ -56,17 +56,8 @@ import org.apache.commonskt.PublicApi
  */
 @Suppress("unused", "UNUSED_VARIABLE")
 @PublicApi
-@ExperimentalUnsignedTypes
-@ExperimentalStdlibApi
 class MathContext {
     /* ----- Shared Properties ----- */
-    /**
-     * Returns the `precision` setting.
-     * This value is always non-negative.
-     *
-     * @return an `int` which is the value of the `precision`
-     * setting
-     */
     /**
      * The number of digits to be used for an operation.  A value of 0
      * indicates that unlimited precision (as many digits as are
