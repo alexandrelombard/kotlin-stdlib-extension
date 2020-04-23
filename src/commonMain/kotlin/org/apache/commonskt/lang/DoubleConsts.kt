@@ -3,7 +3,6 @@ package org.apache.commonskt.lang
 import org.apache.commonskt.PublicApi
 
 @PublicApi
-@ExperimentalUnsignedTypes
 object DoubleConsts {
     const val EXP_BIAS = 1023
     const val MIN_EXPONENT = -1022
@@ -12,6 +11,7 @@ object DoubleConsts {
     /**
      * Bit mask to isolate the sign bit of a `double`.
      */
+    @ExperimentalUnsignedTypes
     val SIGN_BIT_MASK = 0x8000000000000000UL
 
     /**
